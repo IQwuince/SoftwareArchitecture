@@ -16,6 +16,10 @@ public class LevelSystem : MonoBehaviour
     [SerializeField] TextMeshProUGUI levelText;
     [SerializeField] TextMeshProUGUI experienceText;
     [SerializeField] Image experienceFill;
+    [SerializeField] TextMeshProUGUI levelPointsText;
+
+    [Header("Levels")]
+    public int levelPoints;
 
     private void Start()
     {
@@ -28,6 +32,12 @@ public class LevelSystem : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
         {
             AddExperience(50);
+        }
+
+        if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
+        {
+            SpendLevel(1);
+            UpdateLevel();
         }
     }
 
@@ -43,6 +53,7 @@ public class LevelSystem : MonoBehaviour
         if(totalExperience >= nextLevelExperience)
         {
             currentLevel++;
+            levelPoints++;
             UpdateLevel();
         }
     }
@@ -60,7 +71,16 @@ public class LevelSystem : MonoBehaviour
         int endExperience = nextLevelExperience - previousLevelExperience;
 
         levelText.text = currentLevel.ToString();
+        levelPointsText.text = levelPoints.ToString();
         experienceText.text = startExperience + "Exp /" + endExperience + "Exp";
         experienceFill.fillAmount = (float)startExperience / endExperience;
+    }
+
+    void SpendLevel(int points)
+    {
+        if (levelPoints >= points)
+        {
+            levelPoints -= points;
+        }
     }
 }
