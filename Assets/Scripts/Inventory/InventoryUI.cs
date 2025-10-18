@@ -7,8 +7,9 @@ public class InventoryUI : MonoBehaviour
 {
     public TextMeshProUGUI itemNameText;
     public Inventory inventory;
+    public GameObject inventoryUIObject;
 
-   public void GetNames()
+    private void GetNames()
     {
         foreach (Item item in inventory.Items)
         {
@@ -16,12 +17,29 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
+    private void ResetNames()
+    {
+        itemNameText.text = "";
+    }
+
+    public void InventoryItems()
+    {
+        ResetNames();
+        GetNames();
+    }
+
     private void Update()
     {
         if (Keyboard.current != null && Keyboard.current.iKey.wasPressedThisFrame)
         {
             Debug.Log("GetNames");
-            GetNames();
+            InventoryItems();
+        }
+
+        if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
+        {
+            inventoryUIObject.SetActive(!inventoryUIObject.activeSelf);
+            InventoryItems();
         }
     }
 }

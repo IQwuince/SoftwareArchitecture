@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class TestGettingItem : MonoBehaviour
 {
-    private void OnTriggerEnter2D(Collider2D collision)
+    public InventoryUI inventoryUI;
+    private void OnTriggerEnter2D(Collider2D trigger)
     {
         ItemContainer itemContainer = GetComponent<ItemContainer>();
 

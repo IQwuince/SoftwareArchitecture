@@ -35,6 +35,10 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpInput = true;
         }
+
+        if (!isGrounded)
+            Debug.Log("Player not grounded!");
+
     }
 
     private void FixedUpdate()
