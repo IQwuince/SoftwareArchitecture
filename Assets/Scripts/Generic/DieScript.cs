@@ -12,6 +12,7 @@ public class DieScript : MonoBehaviour
     //2D
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        GameManager.Instance.Die();
+        if (CompareTag("Player"))
+            GameManager.Instance.DiePlayer();
     }
 }

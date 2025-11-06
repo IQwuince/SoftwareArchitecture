@@ -1,10 +1,41 @@
+using TMPro;
 using UnityEngine;
 
 public class EnemyHealth : GenericHealth
 {
+    public TextMeshPro healthTextEnemy;
+    private LevelSystem levelSystem; 
+
     private void Start()
     {
-        TakeDamage(20);
+        UpdateHealthUI();
+        levelSystem = GetComponent<LevelSystem>(); 
     }
 
+    public override void TakeDamage(int damage)
+    {
+        base.TakeDamage(damage);
+        UpdateHealthUI();
+        DieEnemy();
+    }
+
+    public override void Heal(int healAmount)
+    {
+        base.Heal(healAmount);
+        UpdateHealthUI();
+    }
+
+    private void DieEnemy()
+    {
+        if (currentHealth <= minHealth)
+        {
+                levelSystem.AddExperience(50);    
+            GameObject.Destroy(this.gameObject);
+        }
+    }
+
+    private void UpdateHealthUI()
+    {
+        healthTextEnemy.text = currentHealth.ToString() + " / " + maxHealth.ToString();
+    }
 }

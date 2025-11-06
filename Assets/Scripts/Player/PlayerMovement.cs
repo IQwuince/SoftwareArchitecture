@@ -16,8 +16,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private bool isGrounded;
-    private float moveInput;
+    public float moveInput;
     private bool jumpInput;
+    public bool isFlipped;
 
     private void Awake()
     {
@@ -36,8 +37,8 @@ public class PlayerMovement : MonoBehaviour
             jumpInput = true;
         }
 
-        if (!isGrounded)
-            Debug.Log("Player not grounded!");
+        /*if (!isGrounded)
+            Debug.Log("Player not grounded!");*/
 
     }
 
@@ -53,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
         if (moveInput != 0)
         {
             spriteRenderer.flipX = moveInput < 0;
+            isFlipped = spriteRenderer.flipX;
         }
 
         // Jump

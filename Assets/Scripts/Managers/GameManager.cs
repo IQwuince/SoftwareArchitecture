@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
-    public void Die()
+    public void DiePlayer()
     {
         Player.transform.position = SavePosition;
         PlayerRB2D.linearVelocity = Vector3.zero;
