@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5104912821487434448}
   - component: {fileID: 3026827100154761195}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,6 +35,7 @@ Transform:
   m_Children:
   - {fileID: 1582984583094050325}
   - {fileID: 6235216441323688354}
+  - {fileID: 1634383607296253325}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &87318231908120984
@@ -183,7 +184,6 @@ MonoBehaviour:
   maxHealth: 100
   minHealth: 0
   currentHealth: 100
-  healthTextEnemy: {fileID: 6149518301278386777}
 --- !u!1 &4431145642151797909
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,6 +363,51 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 1426111449620222190}
   m_maskType: 0
+--- !u!1 &8067666504641346244
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1634383607296253325}
+  - component: {fileID: 2084022708650350111}
+  m_Layer: 0
+  m_Name: EnemyCombat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1634383607296253325
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8067666504641346244}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.074146144, y: 0.08724279, z: 0}
+  m_LocalScale: {x: 0.2879015, y: 0.2879015, z: 0.2879015}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6430912410654469663}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2084022708650350111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8067666504641346244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4ec05dc7f52b984c9c38ab5d9151513, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
+  enemyHealth: {fileID: 3026827100154761195}
 --- !u!1 &8162083224446480752
 GameObject:
   m_ObjectHideFlags: 0

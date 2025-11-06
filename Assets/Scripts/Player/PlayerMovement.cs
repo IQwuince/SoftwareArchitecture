@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,12 +14,19 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
+
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private bool isGrounded;
     public float moveInput;
     private bool jumpInput;
     public bool isFlipped;
+
+    [Header("Checkpoint Trail")]
+    public float checkpointInterval = 0.5f;
+    public int maxCheckpoints = 20;
+    private List<Vector3> checkpointTrail = new List<Vector3>();
+    private float checkpointTimer;
 
     private void Awake()
     {
@@ -37,10 +45,19 @@ public class PlayerMovement : MonoBehaviour
             jumpInput = true;
         }
 
+        // Checkpoint timer
+        checkpointTimer += Time.deltaTime;
+        if (checkpointTimer >= checkpointInterval)
+        {
+            checkpointTimer = 0f;
+            AddCheckpoint(transform.position);
+        }
+
         /*if (!isGrounded)
             Debug.Log("Player not grounded!");*/
 
     }
+
 
     private void FixedUpdate()
     {
@@ -69,12 +86,31 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void AddCheckpoint(Vector3 pos)
+    {
+        checkpointTrail.Add(pos);
+        if (checkpointTrail.Count > maxCheckpoints)
+            checkpointTrail.RemoveAt(0);
+    }
+
     private void OnDrawGizmosSelected()
     {
         if (groundCheck != null)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Draw checkpoint trail
+        Gizmos.color = Color.cyan;
+        for (int i = 0; i < checkpointTrail.Count; i++)
+        {
+            Gizmos.DrawSphere(checkpointTrail[i], 0.15f);
+            if (i > 0)
+                Gizmos.DrawLine(checkpointTrail[i - 1], checkpointTrail[i]);
         }
     }
 }

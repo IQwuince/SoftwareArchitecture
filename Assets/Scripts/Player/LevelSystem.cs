@@ -5,12 +5,13 @@ using UnityEngine.InputSystem;
 
 public class LevelSystem : MonoBehaviour
 {
-
     [Header("Experience")]
     [SerializeField] AnimationCurve experienceCurve;
 
-    int currentLevel, totalExperience;
-    int previousLevelExperience, nextLevelExperience;
+    int currentLevel = 0;
+    int totalExperience = 0;
+    int previousLevelExperience = 0;
+    int nextLevelExperience = 1;
 
     [Header("UI")]
     [SerializeField] TextMeshProUGUI levelText;
@@ -23,9 +24,9 @@ public class LevelSystem : MonoBehaviour
 
     private void Start()
     {
-        UpdateLevel();
+        UpdateLevel(); 
+        UpdateUI();
     }
-
 
     private void Update()
     {
@@ -37,7 +38,7 @@ public class LevelSystem : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
         {
             SpendLevel(1);
-            UpdateLevel();
+            UpdateUI();
         }
     }
 
@@ -50,7 +51,7 @@ public class LevelSystem : MonoBehaviour
 
     public void CheckForLevelUp()
     {
-        if(totalExperience >= nextLevelExperience)
+        while (totalExperience >= nextLevelExperience)
         {
             currentLevel++;
             levelPoints++;
@@ -62,18 +63,17 @@ public class LevelSystem : MonoBehaviour
     {
         previousLevelExperience = (int)experienceCurve.Evaluate(currentLevel);
         nextLevelExperience = (int)experienceCurve.Evaluate(currentLevel + 1);
-        UpdateUI();
+        if (nextLevelExperience <= previousLevelExperience) nextLevelExperience = previousLevelExperience + 1;
     }
 
     void UpdateUI()
     {
         int startExperience = totalExperience - previousLevelExperience;
         int endExperience = nextLevelExperience - previousLevelExperience;
-
         levelText.text = currentLevel.ToString();
         levelPointsText.text = levelPoints.ToString();
-        experienceText.text = startExperience + "Exp /" + endExperience + "Exp";
-        experienceFill.fillAmount = (float)startExperience / endExperience;
+        experienceText.text = $"{startExperience} Exp / {endExperience} Exp";
+        experienceFill.fillAmount = endExperience > 0 ? (float)startExperience / endExperience : 0f;
     }
 
     void SpendLevel(int points)

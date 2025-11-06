@@ -8,7 +8,9 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("References")]
     public BoxCollider2D meleeCollider;
+    public BoxCollider2D playerCollider;
     public PlayerMovement pm;
+    public PlayerHealth playerHealth;
     private bool buttonPress;
 
     HashSet<EnemyHealth> IDamageable = new ();
@@ -57,7 +59,6 @@ public class PlayerCombat : MonoBehaviour
             IDamageable.Remove(eh);
         }
     }
-
     private void DoDamage()
     {
         foreach (var eh in IDamageable)

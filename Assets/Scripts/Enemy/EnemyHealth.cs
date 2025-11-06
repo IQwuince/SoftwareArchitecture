@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class EnemyHealth : GenericHealth
 {
-    public TextMeshPro healthTextEnemy;
-    private LevelSystem levelSystem; 
+    private TextMeshPro healthTextEnemy;
+    private LevelSystem levelSystem;
 
     private void Start()
     {
+        healthTextEnemy = GetComponentInChildren<TextMeshPro>();
+        levelSystem = Object.FindFirstObjectByType<LevelSystem>();
+
         UpdateHealthUI();
-        levelSystem = GetComponent<LevelSystem>(); 
     }
 
     public override void TakeDamage(int damage)
@@ -29,7 +31,7 @@ public class EnemyHealth : GenericHealth
     {
         if (currentHealth <= minHealth)
         {
-                levelSystem.AddExperience(50);    
+            levelSystem.AddExperience(150);
             GameObject.Destroy(this.gameObject);
         }
     }
