@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Checkpoint Trail")]
     public float checkpointInterval = 0.5f;
     public int maxCheckpoints = 20;
-    private List<Vector3> checkpointTrail = new List<Vector3>();
+    public List<Vector3> checkpointTrail = new List<Vector3>();
     private float checkpointTimer;
 
     private void Awake()

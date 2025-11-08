@@ -20,6 +20,8 @@ public class Inventory : MonoBehaviour
     [SerializeField]
     private int strategyIndex = 0;
 
+    public static event Action<string> OnItemPickedUp;
+
     private void Awake()
     {
         GenerateInventory();             // Create items based on itemDatas.
@@ -40,6 +42,7 @@ public class Inventory : MonoBehaviour
     public void AddItem(Item item)
     {
         items.Add(item);
+        OnItemPickedUp?.Invoke(item.ItemName); // Notify quest system
     }
 
     // Removes an item from the inventory.

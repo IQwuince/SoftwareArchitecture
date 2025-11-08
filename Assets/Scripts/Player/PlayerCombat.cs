@@ -11,7 +11,6 @@ public class PlayerCombat : MonoBehaviour
     public BoxCollider2D playerCollider;
     public PlayerMovement pm;
     public PlayerHealth playerHealth;
-    private bool buttonPress;
 
     HashSet<EnemyHealth> IDamageable = new ();
     private float initialOffsetX;
@@ -26,14 +25,7 @@ public class PlayerCombat : MonoBehaviour
         FlipCollider();
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            buttonPress = true;
-            {
                 DoDamage();
-            }
-        }
-        else
-        {
-            buttonPress = false;
         }
     }
 

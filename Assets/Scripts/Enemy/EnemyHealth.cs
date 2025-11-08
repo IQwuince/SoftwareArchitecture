@@ -1,16 +1,21 @@
 using TMPro;
 using UnityEngine;
+using System;
 
 public class EnemyHealth : GenericHealth
 {
+    public static event Action<GameObject> OnEnemyKilled;
+
+    [Header("Enemy Prefab")]
+    public GameObject enemyPrefab; // Assign this in the inspector or via spawner
+
     private TextMeshPro healthTextEnemy;
     private LevelSystem levelSystem;
 
     private void Start()
     {
         healthTextEnemy = GetComponentInChildren<TextMeshPro>();
-        levelSystem = Object.FindFirstObjectByType<LevelSystem>();
-
+        levelSystem = UnityEngine.Object.FindFirstObjectByType<LevelSystem>();
         UpdateHealthUI();
     }
 
@@ -32,6 +37,7 @@ public class EnemyHealth : GenericHealth
         if (currentHealth <= minHealth)
         {
             levelSystem.AddExperience(150);
+            OnEnemyKilled?.Invoke(enemyPrefab);
             GameObject.Destroy(this.gameObject);
         }
     }
