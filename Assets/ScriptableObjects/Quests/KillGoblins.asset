@@ -1,0 +1,25 @@
+%%YAML 1.1
+%%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c4337363dec4a1a8cee6b4c2f6a095e, type: 3}
+  m_Name: KillGoblins
+  m_EditorClassIdentifier: 
+  id: kill_goblins_001
+  title: Slay Goblins
+  description: Defeat 10 goblin enemies that threaten the village.
+  questType: 0
+  target: {fileID: 518981167348514716, guid: 8b855ff52e6d88d44b75eeb841128aaa, type: 3}
+  targetCount: 10
+  reward:
+    xp: 100
+    itemId: 0
+    currency: 50
+  icon: {fileID: 0}

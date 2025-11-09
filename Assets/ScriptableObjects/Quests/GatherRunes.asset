@@ -1,0 +1,25 @@
+%%YAML 1.1
+%%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbdee556a14442fa80cf753cf3c3428c, type: 3}
+  m_Name: GatherRunes
+  m_EditorClassIdentifier: 
+  id: collect_runes_001
+  title: Gather Runes
+  description: Collect 5 magical runes scattered throughout the dungeon.
+  questType: 1
+  target: {fileID: 1234567890123456789, guid: e439f2dd471341bc8515ada3c8f02686, type: 3}
+  targetCount: 5
+  reward:
+    xp: 75
+    itemId: 101
+    currency: 25
+  icon: {fileID: 0}
