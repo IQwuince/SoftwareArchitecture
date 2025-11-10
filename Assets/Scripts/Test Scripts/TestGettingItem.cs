@@ -11,6 +11,7 @@ public class TestGettingItem : MonoBehaviour
         {
             Item item = itemContainer.GiveItem();
             Debug.Log("Obtained item: " + item.ItemName);
+            GameObject.Destroy(gameObject);
         }
     }
 }

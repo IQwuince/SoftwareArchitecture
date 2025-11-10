@@ -2,9 +2,16 @@ using UnityEngine;
 
 public class PlayerLevel : MonoBehaviour
 {
+    [Header("References")]
     public LevelSystem levelSystem;
     public PlayerHealth playerHealth;
     public PlayerCombat playerCombat;
+
+    [Header("Level Up Stats")]
+    public AnimationCurve healthPerLevel;
+    public AnimationCurve damagePerLevel;
+
+
 
     private int lastLevel = 0;
 
@@ -21,21 +28,23 @@ public class PlayerLevel : MonoBehaviour
             int levelsGained = levelSystem.currentLevel - lastLevel;
             for (int i = 0; i < levelsGained; i++)
             {
-                IncreaseDamage(10);
-                IncreaseHealth(20);
+                IncreaseDamage();
+                IncreaseHealth();
             }
             lastLevel = levelSystem.currentLevel;
         }
     }
 
-    void IncreaseHealth(int amount)
+    void IncreaseHealth()
     {
-        playerHealth.maxHealth += amount;
-        playerHealth.currentHealth += amount;
+        float healthIncrease = healthPerLevel.Evaluate(levelSystem.currentLevel);
+        playerHealth.maxHealth += Mathf.RoundToInt(healthIncrease);
+        playerHealth.currentHealth += Mathf.RoundToInt(healthIncrease);
         playerHealth.PlayerHealthUI();
     }
-    void IncreaseDamage(int amount)
+    void IncreaseDamage()
     {
-        playerCombat.damageAmount += amount;
+        float damageIncrease = damagePerLevel.Evaluate(levelSystem.currentLevel);
+        playerCombat.damageAmount += Mathf.RoundToInt(damageIncrease);
     }
 }
