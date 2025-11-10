@@ -14,12 +14,15 @@ public class QuestManager : MonoBehaviour
     [Tooltip("Sample Collect quest activated with P key")]
     public CollectQuestSO sampleCollectQuest;
 
+    [Header("Inventory Reference")]
+    [Tooltip("Reference to the player's inventory for checking collected items")]
+    public Inventory playerInventory;
+
     // Active quests dictionary - one per type
     private Dictionary<QuestType, Quest> activeQuests = new Dictionary<QuestType, Quest>();
 
     // Progress tracking
     private Dictionary<GameObject, int> enemyKillCounts = new Dictionary<GameObject, int>();
-    private Dictionary<GameObject, int> itemCollectCounts = new Dictionary<GameObject, int>();
 
     // Events
     public event Action<Quest> OnQuestActivated;
@@ -133,45 +136,69 @@ public class QuestManager : MonoBehaviour
 
     /// <summary>
     /// Handle item picked up event from inventory system.
-    /// Note: The inventory system sends item name as string, but we need to match by prefab.
-    /// This is a temporary adapter - ideally inventory would send GameObject reference.
+    /// Checks the inventory count against the quest requirements using ItemData.
     /// </summary>
     private void HandleItemPickedUp(string itemName)
     {
-        // This is called from existing Inventory.OnItemPickedUp event which sends string
-        // We need to find the matching GameObject by name in active collect quests
-        if (activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
+        // Check if there's an active collect quest
+        if (!activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
+            return;
+
+        // Get the collect quest data
+        CollectQuestSO collectQuestData = collectQuest.questData as CollectQuestSO;
+        if (collectQuestData == null || collectQuestData.itemToCollect == null)
+            return;
+
+        // If the player inventory is not assigned, try to find it
+        if (playerInventory == null)
         {
-            if (collectQuest.questData.target != null &&
-                collectQuest.questData.target.name == itemName)
+            playerInventory = FindPlayerInventory();
+            if (playerInventory == null)
             {
-                collectQuest.IncrementProgress();
-                Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
+                Debug.LogWarning("QuestManager: Player inventory not found. Cannot track collect quest progress.");
+                return;
             }
+        }
+
+        // Get the current count of the required item in the inventory
+        int currentCount = playerInventory.GetItemCount(collectQuestData.itemToCollect);
+
+        // Update progress to match inventory count
+        if (currentCount > collectQuest.currentProgress)
+        {
+            int progressToAdd = currentCount - collectQuest.currentProgress;
+            collectQuest.IncrementProgress(progressToAdd);
+            Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
         }
     }
 
     /// <summary>
-    /// Public API for game systems to notify item collection by GameObject reference
+    /// Attempts to find the player inventory in the scene
     /// </summary>
+    private Inventory FindPlayerInventory()
+    {
+        // Try to find via singleton first
+        var singleton = FindObjectOfType<SingletonPlayerInventoryController>();
+        if (singleton != null && singleton.inventory != null)
+        {
+            return singleton.inventory;
+        }
+
+        // Fallback to finding any Inventory component
+        return FindObjectOfType<Inventory>();
+    }
+
+    /// <summary>
+    /// Public API for game systems to notify item collection by GameObject reference.
+    /// Note: This method is deprecated for collect quests. Collect quests now use ItemData 
+    /// and automatically track progress via the inventory system.
+    /// </summary>
+    [System.Obsolete("Collect quests now use ItemData and inventory tracking. This method is kept for backward compatibility but has no effect on collect quests.")]
     public void UpdateCollectProgress(GameObject itemPrefab)
     {
-        if (itemPrefab == null) return;
-
-        // Track collect count
-        if (!itemCollectCounts.ContainsKey(itemPrefab))
-            itemCollectCounts[itemPrefab] = 0;
-        itemCollectCounts[itemPrefab]++;
-
-        // Check if any Collect quest matches this item
-        if (activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
-        {
-            if (collectQuest.questData.target == itemPrefab)
-            {
-                collectQuest.IncrementProgress();
-                Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
-            }
-        }
+        // This method is kept for backward compatibility but is no longer used
+        // Collect quests now automatically track progress via inventory system
+        Debug.LogWarning("UpdateCollectProgress(GameObject) is deprecated. Collect quests now use ItemData and inventory tracking.");
     }
 
     /// <summary>
