@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Hierarchy;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,6 +15,8 @@ public class PlayerCombat : MonoBehaviour
 
     HashSet<EnemyHealth> IDamageable = new ();
     private float initialOffsetX;
+
+    public int damageAmount = 10;
 
     void Start()
     {
@@ -55,7 +58,7 @@ public class PlayerCombat : MonoBehaviour
     {
         foreach (var eh in IDamageable)
         {
-          eh.TakeDamage(10);  
+          eh.TakeDamage(damageAmount);  
         }
     }
 

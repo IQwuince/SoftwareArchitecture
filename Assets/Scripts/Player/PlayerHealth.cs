@@ -10,7 +10,7 @@ public class PlayerHealth : GenericHealth
 
     private void Start()
     {
-        HealthUI();
+        PlayerHealthUI();
     }
 
     private void Update()
@@ -20,14 +20,14 @@ public class PlayerHealth : GenericHealth
     public override void TakeDamage(int damage)
     {
         base.TakeDamage(damage);
-        HealthUI();
+        PlayerHealthUI();
         DiePlayer();
     }
 
     public override void Heal(int healAmount)
     {
         base.Heal(healAmount);
-        HealthUI();
+        PlayerHealthUI();
     }
     private void DiePlayer()
     {
@@ -39,7 +39,7 @@ public class PlayerHealth : GenericHealth
         }
     }
 
-    private void HealthUI()
+    public void PlayerHealthUI()
     {
         healthText.text = currentHealth.ToString() + " / " + maxHealth.ToString();
         //healthSlider.value = (float)currentHealth / maxHealth;

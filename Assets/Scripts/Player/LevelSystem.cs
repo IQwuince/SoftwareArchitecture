@@ -8,7 +8,7 @@ public class LevelSystem : MonoBehaviour
     [Header("Experience")]
     [SerializeField] AnimationCurve experienceCurve;
 
-    int currentLevel = 0;
+    public int currentLevel = 0;
     int totalExperience = 0;
     int previousLevelExperience = 0;
     int nextLevelExperience = 1;
