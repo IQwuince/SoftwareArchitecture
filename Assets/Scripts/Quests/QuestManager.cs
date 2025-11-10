@@ -17,12 +17,19 @@ namespace IQwuince.Quests
         [Tooltip("Sample Collect quest activated with P key")]
         public CollectQuestSO sampleCollectQuest;
 
+        [Header("Integration")]
+        [Tooltip("Reference to player inventory for item tracking and rewards")]
+        public Inventory playerInventory;
+
+        [Tooltip("Reference to player level system for XP rewards")]
+        public LevelSystem playerLevelSystem;
+
         // Active quests dictionary - one per type
         private Dictionary<QuestType, Quest> activeQuests = new Dictionary<QuestType, Quest>();
         
         // Progress tracking
         private Dictionary<GameObject, int> enemyKillCounts = new Dictionary<GameObject, int>();
-        private Dictionary<GameObject, int> itemCollectCounts = new Dictionary<GameObject, int>();
+        private Dictionary<string, int> itemCollectCounts = new Dictionary<string, int>();
 
         // Events
         public event Action<Quest> OnQuestActivated;
@@ -126,55 +133,67 @@ namespace IQwuince.Quests
             // Check if any Kill quest matches this enemy
             if (activeQuests.TryGetValue(QuestType.Kill, out Quest killQuest))
             {
-                if (killQuest.questData.target == enemyPrefab)
+                if (killQuest.questData is KillQuestSO killQuestData)
                 {
-                    killQuest.IncrementProgress();
-                    Debug.Log($"Quest progress: {killQuest.questData.title} - {killQuest.GetProgressString()}");
+                    if (killQuestData.targetEnemy == enemyPrefab)
+                    {
+                        killQuest.IncrementProgress();
+                        Debug.Log($"Quest progress: {killQuest.questData.title} - {killQuest.GetProgressString()}");
+                    }
                 }
             }
         }
 
         /// <summary>
         /// Handle item picked up event from inventory system.
-        /// Note: The inventory system sends item name as string, but we need to match by prefab.
-        /// This is a temporary adapter - ideally inventory would send GameObject reference.
+        /// Checks inventory for item counts to track collect quest progress.
         /// </summary>
         private void HandleItemPickedUp(string itemName)
         {
-            // This is called from existing Inventory.OnItemPickedUp event which sends string
-            // We need to find the matching GameObject by name in active collect quests
+            if (playerInventory == null)
+            {
+                Debug.LogWarning("QuestManager: playerInventory is not assigned. Cannot track item collection.");
+                return;
+            }
+
+            // Check if any Collect quest is active
             if (activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
             {
-                if (collectQuest.questData.target != null && 
-                    collectQuest.questData.target.name == itemName)
+                if (collectQuest.questData is CollectQuestSO collectQuestData)
                 {
-                    collectQuest.IncrementProgress();
-                    Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
+                    // Check if this item matches the quest target by ID
+                    if (collectQuestData.targetItem != null)
+                    {
+                        // Count items in inventory that match the target item's ID
+                        int itemCount = CountItemsInInventory(collectQuestData.targetItem.id);
+                        
+                        // Update quest progress if count increased
+                        if (itemCount > collectQuest.currentProgress)
+                        {
+                            collectQuest.SetProgress(itemCount);
+                            Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
+                        }
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Public API for game systems to notify item collection by GameObject reference
+        /// Count items in inventory by item ID
         /// </summary>
-        public void UpdateCollectProgress(GameObject itemPrefab)
+        private int CountItemsInInventory(string itemId)
         {
-            if (itemPrefab == null) return;
+            if (playerInventory == null) return 0;
 
-            // Track collect count
-            if (!itemCollectCounts.ContainsKey(itemPrefab))
-                itemCollectCounts[itemPrefab] = 0;
-            itemCollectCounts[itemPrefab]++;
-
-            // Check if any Collect quest matches this item
-            if (activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
+            int count = 0;
+            foreach (Item item in playerInventory.Items)
             {
-                if (collectQuest.questData.target == itemPrefab)
+                if (item.Id == itemId)
                 {
-                    collectQuest.IncrementProgress();
-                    Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
+                    count++;
                 }
             }
+            return count;
         }
 
         /// <summary>
@@ -192,12 +211,62 @@ namespace IQwuince.Quests
 
         private void HandleQuestCompleted(Quest quest)
         {
-            Debug.Log($"Quest completed: {quest.questData.title}! Rewards: XP={quest.questData.reward.xp}, ItemID={quest.questData.reward.itemId}, Currency={quest.questData.reward.currency}");
+            Debug.Log($"Quest completed: {quest.questData.title}!");
+            
+            // Award rewards
+            AwardRewards(quest.questData.reward);
             
             // Remove from active quests
             activeQuests.Remove(quest.questData.questType);
             
             OnQuestCompleted?.Invoke(quest);
+        }
+
+        /// <summary>
+        /// Award quest rewards to the player
+        /// </summary>
+        private void AwardRewards(QuestReward reward)
+        {
+            if (reward == null || !reward.HasRewards())
+            {
+                Debug.Log("No rewards to award.");
+                return;
+            }
+
+            // Award XP
+            if (reward.xp > 0)
+            {
+                if (playerLevelSystem != null)
+                {
+                    playerLevelSystem.AddExperience(reward.xp);
+                    Debug.Log($"Awarded {reward.xp} XP!");
+                }
+                else
+                {
+                    Debug.LogWarning($"QuestManager: Cannot award {reward.xp} XP - playerLevelSystem not assigned");
+                }
+            }
+
+            // Award items
+            if (reward.rewardItems != null && reward.rewardItems.Length > 0)
+            {
+                if (playerInventory != null)
+                {
+                    foreach (ItemData itemData in reward.rewardItems)
+                    {
+                        if (itemData != null)
+                        {
+                            Item rewardItem = itemData.CreateItem();
+                            playerInventory.AddItem(rewardItem);
+                            Debug.Log($"Awarded item: {itemData.itemName}");
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("QuestManager: Cannot award items - playerInventory not assigned");
+                }
+            }
         }
     }
 }

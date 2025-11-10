@@ -38,6 +38,25 @@ namespace IQwuince.Quests
         }
 
         /// <summary>
+        /// Set progress to a specific value (used for inventory-based tracking)
+        /// </summary>
+        public void SetProgress(int progress)
+        {
+            if (isCompleted) return;
+
+            if (progress != currentProgress)
+            {
+                currentProgress = progress;
+                OnProgressChanged?.Invoke(this);
+
+                if (currentProgress >= questData.targetCount)
+                {
+                    Complete();
+                }
+            }
+        }
+
+        /// <summary>
         /// Mark quest as completed
         /// </summary>
         private void Complete()

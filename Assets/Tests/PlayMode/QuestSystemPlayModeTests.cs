@@ -19,14 +19,26 @@ public class QuestSystemPlayModeTests
     private KillQuestSO testKillQuest;
     private CollectQuestSO testCollectQuest;
     private GameObject testEnemyPrefab;
-    private GameObject testItemPrefab;
+    private ItemData testItemData;
+    private Inventory testInventory;
+    private LevelSystem testLevelSystem;
 
     [SetUp]
     public void Setup()
     {
+        // Create test inventory
+        GameObject inventoryObj = new GameObject("TestInventory");
+        testInventory = inventoryObj.AddComponent<Inventory>();
+
+        // Create test level system
+        GameObject levelSystemObj = new GameObject("TestLevelSystem");
+        testLevelSystem = levelSystemObj.AddComponent<LevelSystem>();
+
         // Create test quest manager
         questManagerObj = new GameObject("QuestManager");
         questManager = questManagerObj.AddComponent<QuestManager>();
+        questManager.playerInventory = testInventory;
+        questManager.playerLevelSystem = testLevelSystem;
 
         // Create test UI
         questUIObj = new GameObject("QuestUI");
@@ -38,8 +50,10 @@ public class QuestSystemPlayModeTests
         // Create test enemy prefab
         testEnemyPrefab = new GameObject("TestEnemy");
 
-        // Create test item prefab
-        testItemPrefab = new GameObject("TestItem");
+        // Create test item data
+        testItemData = ScriptableObject.CreateInstance<ItemData>();
+        testItemData.id = "test_item_001";
+        testItemData.itemName = "Test Item";
 
         // Create test kill quest
         testKillQuest = ScriptableObject.CreateInstance<KillQuestSO>();
@@ -47,9 +61,9 @@ public class QuestSystemPlayModeTests
         testKillQuest.title = "Test Kill Quest";
         testKillQuest.description = "Kill test enemies";
         testKillQuest.questType = QuestType.Kill;
-        testKillQuest.target = testEnemyPrefab;
+        testKillQuest.targetEnemy = testEnemyPrefab;
         testKillQuest.targetCount = 5;
-        testKillQuest.reward = new QuestReward(100, 0, 50);
+        testKillQuest.reward = new QuestReward(100, null);
 
         // Create test collect quest
         testCollectQuest = ScriptableObject.CreateInstance<CollectQuestSO>();
@@ -57,9 +71,9 @@ public class QuestSystemPlayModeTests
         testCollectQuest.title = "Test Collect Quest";
         testCollectQuest.description = "Collect test items";
         testCollectQuest.questType = QuestType.Collect;
-        testCollectQuest.target = testItemPrefab;
+        testCollectQuest.targetItem = testItemData;
         testCollectQuest.targetCount = 3;
-        testCollectQuest.reward = new QuestReward(50, 101, 25);
+        testCollectQuest.reward = new QuestReward(50, null);
 
         // Assign sample quests
         questManager.sampleKillQuest = testKillQuest;
@@ -70,13 +84,241 @@ public class QuestSystemPlayModeTests
     public void Teardown()
     {
         // Clean up
-        Object.Destroy(questManagerObj);
-        Object.Destroy(questUIObj);
+        if (questManager != null && questManager.gameObject != null)
+            Object.Destroy(questManager.gameObject);
+        if (questUIManager != null && questUIManager.gameObject != null)
+            Object.Destroy(questUIManager.gameObject);
+        if (testInventory != null && testInventory.gameObject != null)
+            Object.Destroy(testInventory.gameObject);
+        if (testLevelSystem != null && testLevelSystem.gameObject != null)
+            Object.Destroy(testLevelSystem.gameObject);
         Object.Destroy(testEnemyPrefab);
-        Object.Destroy(testItemPrefab);
+        Object.Destroy(testItemData);
         Object.Destroy(testKillQuest);
         Object.Destroy(testCollectQuest);
     }
+
+    [UnityTest]
+    public IEnumerator TestQuestActivation()
+    {
+        // Test activating a kill quest
+        bool activated = questManager.ActivateQuest(testKillQuest);
+        Assert.IsTrue(activated, "Kill quest should activate successfully");
+
+        var activeQuest = questManager.GetActiveQuest(QuestType.Kill);
+        Assert.IsNotNull(activeQuest, "Active kill quest should not be null");
+        Assert.AreEqual(testKillQuest, activeQuest.questData, "Active quest data should match");
+        Assert.AreEqual(0, activeQuest.currentProgress, "Initial progress should be 0");
+        Assert.IsFalse(activeQuest.isCompleted, "Quest should not be completed initially");
+
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator TestOneQuestPerTypeEnforcement()
+    {
+        // Activate first kill quest
+        bool firstActivation = questManager.ActivateQuest(testKillQuest);
+        Assert.IsTrue(firstActivation, "First kill quest should activate");
+
+        // Create second kill quest
+        var secondKillQuest = ScriptableObject.CreateInstance<KillQuestSO>();
+        secondKillQuest.id = "test_kill_002";
+        secondKillQuest.title = "Second Kill Quest";
+        secondKillQuest.questType = QuestType.Kill;
+        secondKillQuest.targetEnemy = testEnemyPrefab;
+        secondKillQuest.targetCount = 10;
+
+        // Try to activate second kill quest
+        bool secondActivation = questManager.ActivateQuest(secondKillQuest);
+        Assert.IsFalse(secondActivation, "Second kill quest should fail to activate");
+
+        // Verify first quest is still active
+        var activeQuest = questManager.GetActiveQuest(QuestType.Kill);
+        Assert.AreEqual(testKillQuest, activeQuest.questData, "First quest should still be active");
+
+        // Collect quest should still work
+        bool collectActivation = questManager.ActivateQuest(testCollectQuest);
+        Assert.IsTrue(collectActivation, "Collect quest should activate even with kill quest active");
+
+        Object.Destroy(secondKillQuest);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator TestKillQuestProgress()
+    {
+        // Activate quest
+        questManager.ActivateQuest(testKillQuest);
+        var activeQuest = questManager.GetActiveQuest(QuestType.Kill);
+
+        // Simulate kills
+        for (int i = 0; i < 3; i++)
+        {
+            questManager.UpdateKillProgress(testEnemyPrefab);
+            yield return null;
+        }
+
+        // Check progress
+        Assert.AreEqual(3, activeQuest.currentProgress, "Progress should be 3 after 3 kills");
+        Assert.IsFalse(activeQuest.isCompleted, "Quest should not be complete yet");
+
+        // Complete quest
+        questManager.UpdateKillProgress(testEnemyPrefab);
+        questManager.UpdateKillProgress(testEnemyPrefab);
+        yield return null;
+
+        Assert.AreEqual(5, activeQuest.currentProgress, "Progress should be 5");
+        Assert.IsTrue(activeQuest.isCompleted, "Quest should be completed");
+
+        // Quest should be removed from active quests
+        yield return new WaitForSeconds(0.1f);
+        var removedQuest = questManager.GetActiveQuest(QuestType.Kill);
+        Assert.IsNull(removedQuest, "Completed quest should be removed from active quests");
+    }
+
+    [UnityTest]
+    public IEnumerator TestCollectQuestProgressWithInventory()
+    {
+        // Activate quest
+        questManager.ActivateQuest(testCollectQuest);
+        var activeQuest = questManager.GetActiveQuest(QuestType.Collect);
+
+        // Simulate collecting items by adding to inventory
+        testInventory.AddItem(testItemData.CreateItem());
+        yield return null;
+        Assert.AreEqual(1, activeQuest.currentProgress, "Progress should be 1 after 1 collect");
+
+        testInventory.AddItem(testItemData.CreateItem());
+        yield return null;
+        Assert.AreEqual(2, activeQuest.currentProgress, "Progress should be 2 after 2 collects");
+        Assert.IsFalse(activeQuest.isCompleted, "Quest should not be complete yet");
+
+        // Complete quest
+        testInventory.AddItem(testItemData.CreateItem());
+        yield return null;
+
+        Assert.AreEqual(3, activeQuest.currentProgress, "Progress should be 3");
+        Assert.IsTrue(activeQuest.isCompleted, "Quest should be completed");
+
+        // Quest should be removed from active quests
+        yield return new WaitForSeconds(0.1f);
+        var removedQuest = questManager.GetActiveQuest(QuestType.Collect);
+        Assert.IsNull(removedQuest, "Completed quest should be removed from active quests");
+    }
+
+    [UnityTest]
+    public IEnumerator TestQuestUIDisplay()
+    {
+        yield return null; // Wait one frame for UI to initialize
+
+        // Initially should show "No Active Quests"
+        Assert.IsTrue(questText.text.Contains("No Active Quests"), 
+            "UI should show 'No Active Quests' initially");
+
+        // Activate kill quest
+        questManager.ActivateQuest(testKillQuest);
+        yield return null;
+
+        // UI should show the quest
+        Assert.IsTrue(questText.text.Contains("[Kill]"), "UI should show [Kill] type");
+        Assert.IsTrue(questText.text.Contains("Test Kill Quest"), "UI should show quest title");
+        Assert.IsTrue(questText.text.Contains("0/5"), "UI should show initial progress 0/5");
+
+        // Make progress
+        questManager.UpdateKillProgress(testEnemyPrefab);
+        yield return null;
+
+        Assert.IsTrue(questText.text.Contains("1/5"), "UI should show updated progress 1/5");
+
+        // Activate collect quest
+        questManager.ActivateQuest(testCollectQuest);
+        yield return null;
+
+        // UI should show both quests
+        Assert.IsTrue(questText.text.Contains("[Kill]"), "UI should show [Kill] quest");
+        Assert.IsTrue(questText.text.Contains("[Collect]"), "UI should show [Collect] quest");
+        Assert.IsTrue(questText.text.Contains("Test Collect Quest"), "UI should show collect quest title");
+        Assert.IsTrue(questText.text.Contains("0/3"), "UI should show collect quest progress");
+    }
+
+    [UnityTest]
+    public IEnumerator TestQuestCompletion()
+    {
+        bool questCompleted = false;
+        Quest completedQuest = null;
+
+        // Listen for completion event
+        questManager.OnQuestCompleted += (quest) =>
+        {
+            questCompleted = true;
+            completedQuest = quest;
+        };
+
+        // Activate and complete quest
+        questManager.ActivateQuest(testKillQuest);
+        var activeQuest = questManager.GetActiveQuest(QuestType.Kill);
+
+        for (int i = 0; i < 5; i++)
+        {
+            questManager.UpdateKillProgress(testEnemyPrefab);
+            yield return null;
+        }
+
+        // Wait for completion event
+        yield return new WaitForSeconds(0.1f);
+
+        Assert.IsTrue(questCompleted, "Quest completion event should fire");
+        Assert.IsNotNull(completedQuest, "Completed quest should not be null");
+        Assert.AreEqual(testKillQuest, completedQuest.questData, "Completed quest data should match");
+        Assert.AreEqual(100, completedQuest.questData.reward.xp, "Reward XP should be 100");
+    }
+
+    [UnityTest]
+    public IEnumerator TestInvalidQuestActivation()
+    {
+        // Create invalid quest (missing target)
+        var invalidQuest = ScriptableObject.CreateInstance<KillQuestSO>();
+        invalidQuest.id = "invalid_001";
+        invalidQuest.title = "Invalid Quest";
+        invalidQuest.questType = QuestType.Kill;
+        invalidQuest.targetEnemy = null; // Missing target
+        invalidQuest.targetCount = 5;
+
+        // Try to activate
+        bool activated = questManager.ActivateQuest(invalidQuest);
+        Assert.IsFalse(activated, "Invalid quest should not activate");
+
+        var activeQuest = questManager.GetActiveQuest(QuestType.Kill);
+        Assert.IsNull(activeQuest, "No quest should be active");
+
+        Object.Destroy(invalidQuest);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator TestQuestProgressEvents()
+    {
+        int progressChangeCount = 0;
+
+        // Listen for progress events
+        questManager.OnQuestProgressChanged += (quest) =>
+        {
+            progressChangeCount++;
+        };
+
+        questManager.ActivateQuest(testKillQuest);
+
+        // Make progress
+        questManager.UpdateKillProgress(testEnemyPrefab);
+        yield return null;
+        Assert.AreEqual(1, progressChangeCount, "Progress event should fire once");
+
+        questManager.UpdateKillProgress(testEnemyPrefab);
+        yield return null;
+        Assert.AreEqual(2, progressChangeCount, "Progress event should fire twice");
+    }
+}
 
     [UnityTest]
     public IEnumerator TestQuestActivation()

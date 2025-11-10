@@ -4,6 +4,8 @@
 
 This quest system provides a pluggable, ScriptableObject-based framework for creating and managing quests in your Unity 2D dungeon crawler. It supports two quest types: **Kill Enemies** and **Collect Items**.
 
+The system integrates with the existing **Inventory** system for item collection tracking and the **LevelSystem** for XP rewards.
+
 ## Quick Start
 
 ### 1. Creating a Quest
@@ -18,18 +20,40 @@ This quest system provides a pluggable, ScriptableObject-based framework for cre
 
 Fill in the quest properties in the Inspector:
 
+**For Kill Quests:**
 - **ID**: Unique identifier for the quest
 - **Title**: Display name shown in UI
 - **Description**: Quest description for players
-- **Quest Type**: Automatically set based on quest type (Kill or Collect)
-- **Target**: Reference to the enemy/item prefab to track
-- **Target Count**: Number of targets needed to complete
-- **Reward**: Configure XP, item ID, and currency rewards
+- **Quest Type**: Automatically set to Kill
+- **Target Enemy**: Reference to the enemy prefab to kill
+- **Target Count**: Number of enemies needed to complete
+- **Reward XP**: Experience points awarded on completion
+- **Reward Items**: Array of ItemData ScriptableObjects to award (optional)
+- **Icon**: Optional sprite for UI display
+
+**For Collect Quests:**
+- **ID**: Unique identifier for the quest
+- **Title**: Display name shown in UI
+- **Description**: Quest description for players
+- **Quest Type**: Automatically set to Collect
+- **Target Item**: ItemData ScriptableObject to collect from inventory
+- **Target Count**: Number of items needed to complete
+- **Reward XP**: Experience points awarded on completion
+- **Reward Items**: Array of ItemData ScriptableObjects to award (optional)
 - **Icon**: Optional sprite for UI display
 
 The editor will show validation warnings if required fields are missing or invalid.
 
-### 3. Activating Quests
+### 3. Setting Up QuestManager
+
+The QuestManager needs references to work properly:
+
+1. Add QuestManager to your scene (or use the QuestManager prefab)
+2. Assign **Player Inventory** reference (Inventory component)
+3. Assign **Player Level System** reference (LevelSystem component)
+4. Optionally assign sample quests for testing
+
+### 4. Activating Quests
 
 #### Option A: Sample Scene Testing (O/P Keys)
 In the QuestDemo scene:
@@ -56,11 +80,11 @@ public class YourScript : MonoBehaviour
 }
 ```
 
-### 4. Quest Progress Rules
+### 5. Quest Progress Rules
 
 - **One Active Quest Per Type**: Only one Kill quest and one Collect quest can be active at a time
 - **Auto-Completion**: Quests complete automatically when target count is reached
-- **Event-Driven**: Progress updates happen via game events (enemy kills, item pickups)
+- **Event-Driven**: Progress updates happen via game events (enemy kills, item pickups from inventory)
 
 ## Integration API
 
@@ -74,11 +98,9 @@ questManager.UpdateKillProgress(enemyPrefab);
 
 ### For Item Collection
 
-The quest system listens to `Inventory.OnItemPickedUp` event. For direct calls:
+The quest system automatically tracks items in the inventory when `Inventory.OnItemPickedUp` is fired. The system checks the inventory to count items matching the quest's target ItemData.
 
-```csharp
-questManager.UpdateCollectProgress(itemPrefab);
-```
+**No manual calls needed** - the system uses the inventory to track progress automatically!
 
 ### Listening to Quest Events
 
@@ -115,14 +137,38 @@ public class RewardHandler : MonoBehaviour
 
     void HandleQuestCompleted(Quest quest)
     {
-        // Award rewards
-        var reward = quest.questData.reward;
-        // player.AddXP(reward.xp);
-        // player.AddCurrency(reward.currency);
-        // inventory.AddItem(reward.itemId);
+        // Rewards are automatically given by QuestManager
+        // XP is added to LevelSystem
+        // Items are added to Inventory
+        Debug.Log($"Quest completed: {quest.questData.title}");
     }
 }
 ```
+
+## Reward System
+
+The quest system now supports flexible rewards:
+
+### XP Rewards
+- Automatically added to the player's LevelSystem when quest completes
+- Configure in the "Reward XP" field
+
+### Item Rewards
+- Award one or more ItemData ScriptableObjects
+- Items are automatically added to the player's inventory on quest completion
+- Configure in the "Reward Items" array
+- Easy to extend: just add more items to the array!
+
+### Example Reward Configuration
+```
+Reward XP: 100
+Reward Items: 
+  - Element 0: Sword ItemData
+  - Element 1: Shield ItemData
+  - Element 2: Potion ItemData
+```
+
+All rewards are automatically given when the quest completes - no manual code needed!
 
 ## UI Display
 

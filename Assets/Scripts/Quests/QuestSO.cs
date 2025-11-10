@@ -23,9 +23,6 @@ namespace IQwuince.Quests
         [Tooltip("Type of quest (Kill or Collect)")]
         public QuestType questType;
         
-        [Tooltip("Reference to target prefab (enemy or item)")]
-        public GameObject target;
-        
         [Tooltip("How many targets needed to complete")]
         public int targetCount;
 
@@ -50,12 +47,6 @@ namespace IQwuince.Quests
             if (string.IsNullOrEmpty(title))
             {
                 error = "Quest title cannot be empty";
-                return false;
-            }
-
-            if (target == null)
-            {
-                error = "Target prefab is required";
                 return false;
             }
 

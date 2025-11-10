@@ -1,22 +1,39 @@
 using System;
+using UnityEngine;
 
 namespace IQwuince.Quests
 {
     /// <summary>
-    /// Defines rewards given upon quest completion
+    /// Defines rewards given upon quest completion.
+    /// Supports XP and multiple item rewards.
     /// </summary>
     [Serializable]
-    public struct QuestReward
+    public class QuestReward
     {
+        [Tooltip("Experience points awarded")]
         public int xp;
-        public int itemId;
-        public int currency;
 
-        public QuestReward(int xp = 0, int itemId = 0, int currency = 0)
+        [Tooltip("Item rewards given to inventory (uses ItemData ScriptableObjects)")]
+        public ItemData[] rewardItems;
+
+        public QuestReward()
+        {
+            xp = 0;
+            rewardItems = new ItemData[0];
+        }
+
+        public QuestReward(int xp, ItemData[] items = null)
         {
             this.xp = xp;
-            this.itemId = itemId;
-            this.currency = currency;
+            this.rewardItems = items ?? new ItemData[0];
+        }
+
+        /// <summary>
+        /// Returns true if there are any rewards
+        /// </summary>
+        public bool HasRewards()
+        {
+            return xp > 0 || (rewardItems != null && rewardItems.Length > 0);
         }
     }
 }
