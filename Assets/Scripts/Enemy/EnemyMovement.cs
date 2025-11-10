@@ -43,9 +43,13 @@ public abstract class EnemyMovement2D : MonoBehaviour
     }
 
     protected virtual void Start()
-    {
-        if (player != null)
+    {// Find the player by tag at runtime
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
             playerMovement = player.GetComponent<PlayerMovement>();
+        }
 
         OnPatrolSetup();
     }

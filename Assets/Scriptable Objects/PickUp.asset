@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 076168c3fd1035a47937f1c5db06f25d, type: 3}
+  m_Name: PickUp
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  id: PickupItem
+  itemName: PickupItem
+  attack: 0
+  defense: 0
+  itemIcon: {fileID: 5061900860415834490, guid: 3421078018dc3934a8c1ab3b7bf89aa0, type: 3}
+  itemModel: {fileID: 1234567890123456789, guid: e439f2dd471341bc8515ada3c8f02686, type: 3}

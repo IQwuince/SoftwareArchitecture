@@ -1,5 +1,6 @@
-﻿using TMPro;
+﻿/*using TMPro;
 using UnityEngine;
+
 
 public class QuestUIManager : MonoBehaviour
 {
@@ -26,3 +27,4 @@ public class QuestUIManager : MonoBehaviour
         }
     }
 }
+*/

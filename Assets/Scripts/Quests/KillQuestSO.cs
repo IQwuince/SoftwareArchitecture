@@ -1,10 +1,7 @@
 using UnityEngine;
+using IQwuince.Quests;
 
-namespace IQwuince.Quests
-{
-    /// <summary>
-    /// Quest that requires killing a specific number of enemies
-    /// </summary>
+
     [CreateAssetMenu(fileName = "New Kill Quest", menuName = "Quests/Kill Enemies Quest")]
     public class KillQuestSO : QuestSO
     {
@@ -20,4 +17,4 @@ namespace IQwuince.Quests
             description = "Defeat a specified number of enemies";
         }
     }
-}
+

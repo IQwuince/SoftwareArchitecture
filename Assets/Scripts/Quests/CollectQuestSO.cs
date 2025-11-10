@@ -1,7 +1,7 @@
 using UnityEngine;
+using IQwuince.Quests;
 
-namespace IQwuince.Quests
-{
+
     /// <summary>
     /// Quest that requires collecting a specific number of items
     /// </summary>
@@ -20,4 +20,4 @@ namespace IQwuince.Quests
             description = "Gather a specified number of items";
         }
     }
-}
+
