@@ -205,13 +205,22 @@ To add new quest types:
 4. Update UI format if needed
 
 ### Known Limitations
-- Item collection uses name-based matching (inventory sends string)
 - No quest persistence (quests reset on scene reload)
 - UI is minimal (single TMP text component)
+
+### Recent Updates (Inventory Integration)
+- **Collect quests now use ItemData**: Collect quests now properly integrate with the inventory system using ItemData ScriptableObjects instead of GameObject references
+- **Inventory-based tracking**: Quest progress is tracked by checking the player's inventory count for specific ItemData objects
+- **Auto-detection**: The QuestManager can auto-detect the player's inventory if not manually assigned
+- See `COLLECT_QUEST_INTEGRATION.md` for detailed migration and usage guide
 
 These are intentional design choices to keep the system simple and modular as specified.
 
 ## Files Changed/Added
 - 30 new files (scripts, assets, prefabs, tests)
-- 0 existing files modified (clean addition)
+- 4 files modified for inventory integration:
+  - `CollectQuestSO.cs`: Added ItemData field and custom validation
+  - `QuestSO.cs`: Updated validation for collect quests
+  - `Inventory.cs`: Added GetItemCount method
+  - `QuestManager.cs`: Updated to use inventory-based tracking
 - All files properly namespaced and documented

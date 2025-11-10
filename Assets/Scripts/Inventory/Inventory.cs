@@ -51,6 +51,22 @@ public class Inventory : MonoBehaviour
         items.Remove(item);
     }
 
+    // Counts how many items of a specific ItemData type are in the inventory.
+    public int GetItemCount(ItemData itemData)
+    {
+        if (itemData == null) return 0;
+        
+        int count = 0;
+        foreach (Item item in items)
+        {
+            if (item.Id == itemData.id)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
     #region "Strategy Pattern Implementation"
     // Loads sorting strategy components from child objects.
     private void LoadItemSortingStrategies()

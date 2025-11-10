@@ -53,9 +53,11 @@ namespace IQwuince.Quests
                 return false;
             }
 
-            if (target == null)
+            // Target is only required for Kill quests
+            // Collect quests use itemToCollect field in CollectQuestSO instead
+            if (questType == QuestType.Kill && target == null)
             {
-                error = "Target prefab is required";
+                error = "Target prefab is required for kill quests";
                 return false;
             }
 

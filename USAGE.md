@@ -18,14 +18,27 @@ This quest system provides a pluggable, ScriptableObject-based framework for cre
 
 Fill in the quest properties in the Inspector:
 
+#### For Kill Quests:
 - **ID**: Unique identifier for the quest
 - **Title**: Display name shown in UI
 - **Description**: Quest description for players
-- **Quest Type**: Automatically set based on quest type (Kill or Collect)
-- **Target**: Reference to the enemy/item prefab to track
-- **Target Count**: Number of targets needed to complete
+- **Quest Type**: Automatically set to Kill
+- **Target**: Reference to the enemy prefab to track
+- **Target Count**: Number of enemies needed to complete
 - **Reward**: Configure XP, item ID, and currency rewards
 - **Icon**: Optional sprite for UI display
+
+#### For Collect Quests:
+- **ID**: Unique identifier for the quest
+- **Title**: Display name shown in UI
+- **Description**: Quest description for players
+- **Quest Type**: Automatically set to Collect
+- **Item To Collect**: Reference to the ItemData ScriptableObject to collect (from inventory system)
+- **Target Count**: Number of items needed to complete
+- **Reward**: Configure XP, item ID, and currency rewards
+- **Icon**: Optional sprite for UI display
+
+**Note**: Collect quests now use the inventory system's ItemData ScriptableObjects instead of GameObject references. This allows proper integration with the inventory system.
 
 The editor will show validation warnings if required fields are missing or invalid.
 
@@ -61,6 +74,7 @@ public class YourScript : MonoBehaviour
 - **One Active Quest Per Type**: Only one Kill quest and one Collect quest can be active at a time
 - **Auto-Completion**: Quests complete automatically when target count is reached
 - **Event-Driven**: Progress updates happen via game events (enemy kills, item pickups)
+- **Inventory-Based Collection**: Collect quests track progress by checking the player's inventory count for specific ItemData
 
 ## Integration API
 
@@ -74,10 +88,27 @@ questManager.UpdateKillProgress(enemyPrefab);
 
 ### For Item Collection
 
-The quest system listens to `Inventory.OnItemPickedUp` event. For direct calls:
+The collect quest system now automatically tracks items via the inventory system. When items are added to the inventory:
+
+1. The `Inventory.OnItemPickedUp` event fires
+2. The quest system checks if there's an active collect quest
+3. If the quest's `itemToCollect` matches items in the inventory, progress updates automatically
+
+**No manual calls needed** - the quest system monitors the inventory count automatically!
+
+#### Legacy Method (Deprecated)
+The old `UpdateCollectProgress(GameObject)` method is deprecated:
 
 ```csharp
+// This method is deprecated and no longer functional for collect quests
 questManager.UpdateCollectProgress(itemPrefab);
+```
+
+### Setting Up Inventory Reference
+
+In the QuestManager component:
+- Optionally assign the `Player Inventory` field in the inspector
+- If not assigned, it will auto-detect via SingletonPlayerInventoryController or FindObjectOfType
 ```
 
 ### Listening to Quest Events
