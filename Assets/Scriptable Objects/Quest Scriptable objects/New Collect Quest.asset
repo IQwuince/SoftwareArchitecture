@@ -23,3 +23,4 @@ MonoBehaviour:
     itemId: 0
     currency: 0
   icon: {fileID: -5728686177044832811, guid: b1f24b3bc2e2f1d4b858657ad5c115a0, type: 3}
+  itemToCollect: {fileID: 11400000, guid: bb37c70d2c690ec49bc700189f4cc73d, type: 2}

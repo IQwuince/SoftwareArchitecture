@@ -2,10 +2,6 @@ using UnityEngine;
 
 namespace IQwuince.Quests
 {
-    /// <summary>
-    /// Base ScriptableObject for quest definitions.
-    /// Designers create quest assets from this in the inspector.
-    /// </summary>
     public abstract class QuestSO : ScriptableObject
     {
         [Header("Quest Identity")]

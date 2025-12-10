@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 [DisallowMultipleComponent]
 public abstract class EnemyMovement2D : MonoBehaviour
@@ -7,6 +8,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
     [Header("References")]
     [SerializeField] protected EnemyHealth enemyHealth;
     [SerializeField] protected Transform player;
+    public TextMeshProUGUI stateText;
 
     protected PlayerMovement playerMovement;
     protected Rigidbody2D rb;
@@ -63,6 +65,8 @@ public abstract class EnemyMovement2D : MonoBehaviour
             lastRaycastTime = Time.time;
             HandleLineOfSight();
         }
+
+        UpdateUIState();
     }
 
     protected virtual void FixedUpdate()
@@ -88,6 +92,13 @@ public abstract class EnemyMovement2D : MonoBehaviour
             default:
                 TickIdle();
                 break;
+        }
+    }
+    public void UpdateUIState()
+    {
+        if (stateText != null)
+        {
+            stateText.text = "State: " + currentState.ToString();
         }
     }
 

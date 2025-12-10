@@ -2,9 +2,6 @@ using System;
 
 namespace IQwuince.Quests
 {
-    /// <summary>
-    /// Runtime representation of an active quest with progress tracking
-    /// </summary>
     public class Quest
     {
         public QuestSO questData { get; private set; }
@@ -57,3 +54,4 @@ namespace IQwuince.Quests
         }
     }
 }
+

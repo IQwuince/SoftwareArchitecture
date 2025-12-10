@@ -2,9 +2,6 @@ using System;
 
 namespace IQwuince.Quests
 {
-    /// <summary>
-    /// Defines rewards given upon quest completion
-    /// </summary>
     [Serializable]
     public struct QuestReward
     {

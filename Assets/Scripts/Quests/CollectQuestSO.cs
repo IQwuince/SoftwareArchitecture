@@ -1,10 +1,6 @@
 using UnityEngine;
 using IQwuince.Quests;
 
-
-    /// <summary>
-    /// Quest that requires collecting a specific number of items
-    /// </summary>
     [CreateAssetMenu(fileName = "New Collect Quest", menuName = "Quests/Collect Items Quest")]
     public class CollectQuestSO : QuestSO
     {

@@ -18,6 +18,7 @@ public class GroundChaserEnemy : EnemyMovement2D
     {
         // ensure we start facing a direction (keep existing transform scale or sprite)
         // patrolDirection remains as configured; optionally detect nearest free side here
+
     }
 
     protected override void MovePatrol()

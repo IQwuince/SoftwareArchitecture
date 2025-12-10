@@ -8,6 +8,12 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
     public float jumpForce = 16f;
+    public float verticalBounceBackForce = 5f;
+    public float horizontalBounceBackForce = 5f;
+
+    [Header("Knockback")]
+    [Tooltip("How long the player is knocked back and input is disabled")]
+    public float knockbackDuration = 0.25f;
 
     [Header("Ground Check")]
     public Transform groundCheck;
@@ -28,6 +34,10 @@ public class PlayerMovement : MonoBehaviour
     public List<Vector3> checkpointTrail = new List<Vector3>();
     private float checkpointTimer;
 
+    // Knockback state
+    private bool isKnockedBack = false;
+    private float knockbackTimer = 0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -36,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // Read movement input
+        // Read movement input (only read; application happens in FixedUpdate)
         moveInput = Keyboard.current.aKey.isPressed ? -1f : Keyboard.current.dKey.isPressed ? 1f : 0f;
 
         // Read jump input
@@ -53,9 +63,6 @@ public class PlayerMovement : MonoBehaviour
             AddCheckpoint(transform.position);
         }
 
-        /*if (!isGrounded)
-            Debug.Log("Player not grounded!");*/
-
     }
 
 
@@ -64,18 +71,35 @@ public class PlayerMovement : MonoBehaviour
         // Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Horizontal movement
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
-
-        // Flip sprite
-        if (moveInput != 0)
+        // Handle knockback timer
+        if (isKnockedBack)
         {
-            spriteRenderer.flipX = moveInput < 0;
-            isFlipped = spriteRenderer.flipX;
+            knockbackTimer -= Time.fixedDeltaTime;
+            if (knockbackTimer <= 0f)
+            {
+                isKnockedBack = false;
+            }
         }
 
+        // Horizontal movement: only apply player input when NOT knocked back
+        float targetX = rb.linearVelocity.x;
+        if (!isKnockedBack)
+        {
+            targetX = moveInput * moveSpeed;
+
+            // Flip sprite based on input
+            if (moveInput != 0)
+            {
+                spriteRenderer.flipX = moveInput < 0;
+                isFlipped = spriteRenderer.flipX;
+            }
+        }
+
+        // Apply velocity while preserving current vertical velocity
+        rb.linearVelocity = new Vector2(targetX, rb.linearVelocity.y);
+
         // Jump
-        if (jumpInput && isGrounded)
+        if (jumpInput && isGrounded && !isKnockedBack)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpInput = false;
@@ -92,6 +116,31 @@ public class PlayerMovement : MonoBehaviour
         if (checkpointTrail.Count > maxCheckpoints)
             checkpointTrail.RemoveAt(0);
     }
+
+    private void OnEnable()
+    {
+        PlayerHealth.OnPlayerDamaged += OnPlayerDamaged;
+    }
+
+    private void OnDisable()
+    {
+        PlayerHealth.OnPlayerDamaged -= OnPlayerDamaged;
+    }
+
+    // Called when player is damaged. This sets a knockback velocity and enters knockback state.
+    private void OnPlayerDamaged()
+    {
+        // Determine horizontal direction based on sprite flip (facing right -> not flipped)
+        float kbX = isFlipped ? horizontalBounceBackForce : -horizontalBounceBackForce;
+
+        // Apply immediate velocity for knockback
+        rb.linearVelocity = new Vector2(kbX, verticalBounceBackForce);
+
+        // Enter knockback state
+        isKnockedBack = true;
+        knockbackTimer = knockbackDuration;
+    }
+
 
     private void OnDrawGizmosSelected()
     {

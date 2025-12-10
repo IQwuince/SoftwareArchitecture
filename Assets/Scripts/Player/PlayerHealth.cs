@@ -8,6 +8,9 @@ public class PlayerHealth : GenericHealth
     public Slider healthSlider;
     public TextMeshProUGUI healthText;
 
+    public static event System.Action OnPlayerDamaged;
+
+
     private void Start()
     {
         PlayerHealthUI();
@@ -21,6 +24,7 @@ public class PlayerHealth : GenericHealth
     {
         base.TakeDamage(damage);
         PlayerHealthUI();
+        OnPlayerDamaged?.Invoke(); 
         DiePlayer();
     }
 
@@ -35,6 +39,7 @@ public class PlayerHealth : GenericHealth
         {
             Debug.Log("Dead");
             GameManager.Instance.DiePlayer();
+            PlayerHealthUI();
 
         }
     }
