@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using static UnityEditor.Progress;
 using NUnit.Framework.Interfaces;
+using Unity.Properties;
 
 public class Inventory : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Inventory : MonoBehaviour
     private List<ItemData> itemDatas;
 
     [SerializeReference]
-    private List<Item> items;
+    public List<Item> items;
 
     public Item[] Items => items.ToArray();
 
@@ -19,6 +20,9 @@ public class Inventory : MonoBehaviour
 
     [SerializeField]
     private int strategyIndex = 0;
+
+    [Header("Grid")]
+    public ItemSlot[] itemSlots;
 
     public static event Action<string> OnItemPickedUp;
 

@@ -12,6 +12,7 @@ public class ItemData : ScriptableObject
     public string itemName;
     public int attack;
     public int defense;
+    public string itemDescription;
 
     [Header("Visuals")]
     public Sprite itemIcon;
@@ -42,6 +43,8 @@ public class Item
     [SerializeField]
     private int defense;
     public int Defense => defense;
+    private string itemDescription;
+    public string ItemDescription => itemDescription;
 
     [Header("Visuals")]
     public Sprite itemIcon;
@@ -53,6 +56,7 @@ public class Item
         itemName = itemData.itemName;
         attack = itemData.attack;
         defense = itemData.defense;
+        itemDescription = itemData.itemDescription;
 
         itemIcon = itemData.itemIcon;
         itemModel = itemData.itemModel;

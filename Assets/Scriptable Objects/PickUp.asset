@@ -16,5 +16,6 @@ MonoBehaviour:
   itemName: PickupItem
   attack: 0
   defense: 0
+  itemDescription: pickup test description
   itemIcon: {fileID: 5061900860415834490, guid: 3421078018dc3934a8c1ab3b7bf89aa0, type: 3}
   itemModel: {fileID: 1234567890123456789, guid: e439f2dd471341bc8515ada3c8f02686, type: 3}
