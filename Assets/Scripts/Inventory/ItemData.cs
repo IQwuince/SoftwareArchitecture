@@ -18,11 +18,10 @@ public class ItemData : ScriptableObject
     public Sprite itemIcon;
     public GameObject itemModel;
 
-    public Item CreateItem()
+    public virtual Item CreateItem()
     {
         return new Item(this);
     }
-
 }
 
 [Serializable]
@@ -31,8 +30,7 @@ public class Item
     [Header("Unique id for each item")]
     [SerializeField]
     private string id;
-    public string Id => id;//This setup allows access to the private field 'id'
-                           //while also allows it to be shown in the inspector
+    public string Id => id;
 
     [Header("Core properties")]
     [SerializeField]
@@ -51,8 +49,20 @@ public class Item
     public Sprite itemIcon;
     public GameObject itemModel;
 
+    // Keep a reference to the original ScriptableObject that created this runtime Item
+    [NonSerialized]
+    private ItemData sourceData;
+    public ItemData ItemData => sourceData;
+
+    // Convenience: if the source SO is a Usables, expose its values here
+    public int HealAmount => ItemData is Usables u ? u.healAmount : 0;
+    public bool IsUsable => ItemData is Usables u ? u.isUsable : false;
+
+    // Constructor used by ItemData.CreateItem()
     public Item(ItemData itemData)
     {
+        sourceData = itemData;
+
         id = itemData.id;
         itemName = itemData.itemName;
         attack = itemData.attack;
@@ -63,4 +73,3 @@ public class Item
         itemModel = itemData.itemModel;
     }
 }
-

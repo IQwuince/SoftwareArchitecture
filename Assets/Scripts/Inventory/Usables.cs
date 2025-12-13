@@ -9,7 +9,7 @@ public class Usables : ItemData
     public int healAmount;
     public bool isUsable;
 
-    
+
 
 
 }
