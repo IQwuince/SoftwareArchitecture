@@ -71,6 +71,8 @@ public class Inventory : MonoBehaviour
         return count;
     }
 
+
+
     #region "Strategy Pattern Implementation"
     // Loads sorting strategy components from child objects.
     private void LoadItemSortingStrategies()

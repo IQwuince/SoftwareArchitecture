@@ -22,6 +22,7 @@ public class ItemData : ScriptableObject
     {
         return new Item(this);
     }
+
 }
 
 [Serializable]

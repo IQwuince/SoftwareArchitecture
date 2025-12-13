@@ -6,18 +6,15 @@ using System;
 
 public class ItemSlot : MonoBehaviour, IPointerClickHandler
 {
-    public static Action<ItemSlot> OnAnySlotClicked; // broadcast when a slot is clicked
-
-    // Shared TMP_Text for item description (assign from InventoryUI)
+    public static Action<ItemSlot> OnAnySlotClicked;
     public static TMP_Text SharedDescriptionText;
-    public static event Action OnAnySelectionChanged;
-
 
     [Header("Item Data")]
     public string itemName;
     public int quantity;
     public Sprite itemSprite;
     public bool isFull;
+    public string ItemId; // Store the item's ID
     public TMP_Text ItemNameText;
 
     [Header("Item Slot")]
@@ -25,6 +22,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Image itemImage;
 
     [Header("Item Description Slot")]
+    // These are no longer used for the shared description panel, keep only if needed per-slot.
     public Image itemDescriptionImage;
     public TMP_Text itemNameText;
     public TMP_Text itemDescriptionText;
@@ -32,131 +30,84 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
 
     [Header("References")]
     private Inventory inventory;
-    public Image selectedShader;      // outline image (assign in inspector)
+    public Image selectedShader; // outline image (assign in inspector)
     public bool thisItemSelected;
-
-    // Store the description for this slot
     private string itemDescription;
 
     private void OnEnable()
     {
-        OnAnySlotClicked += HandleAnySlotClicked;
+        // ensure slot starts deselected
+        SetSelected(false);
     }
 
     private void OnDisable()
     {
-        OnAnySlotClicked -= HandleAnySlotClicked;
+        SetSelected(false);
     }
 
     private void Start()
     {
-        inventory = UnityEngine.Object.FindFirstObjectByType<Inventory>();
-        Clear();
-        // make sure outline is off initially
-        if (selectedShader != null) selectedShader.gameObject.SetActive(false);
+        SetSelected(false);
     }
 
-    // Populate the slot visuals with given data
-    public void AddItem(string itemName, int quantity, Sprite itemSprite, string itemDescription)
+    public void AddItem(string itemName, int quantity, Sprite itemSprite, string itemDescription, string itemId)
     {
         this.itemName = itemName;
         this.quantity = quantity;
         this.itemSprite = itemSprite;
         this.itemDescription = itemDescription;
+        this.ItemId = itemId;
         isFull = true;
 
         if (ItemNameText != null) ItemNameText.text = itemName;
-        if (quantityText != null)
-        {
-            quantityText.text = quantity > 1 ? quantity.ToString() : "";
-            quantityText.enabled = quantity > 1;
-        }
+        if (quantityText != null) quantityText.text = quantity.ToString();
         if (itemImage != null)
         {
             itemImage.sprite = itemSprite;
-            itemImage.enabled = itemSprite != null;
+            itemImage.enabled = true;
         }
     }
 
-    // Clear visuals and reset internal state
     public void Clear()
     {
-        itemName = null;
+        itemName = "";
         quantity = 0;
         itemSprite = null;
-        itemDescription = null;
+        itemDescription = "";
+        ItemId = "";
         isFull = false;
 
         if (ItemNameText != null) ItemNameText.text = "";
-        if (quantityText != null)
-        {
-            quantityText.text = "";
-            quantityText.enabled = false;
-        }
+        if (quantityText != null) quantityText.text = "";
         if (itemImage != null)
         {
             itemImage.sprite = null;
             itemImage.enabled = false;
         }
-
-        // ensure selection outline is off when the slot is cleared
-        thisItemSelected = false;
-        if (selectedShader != null) selectedShader.gameObject.SetActive(false);
+        SetSelected(false);
     }
 
-    // Toggle selection visual
     public void SetSelected(bool on)
     {
         thisItemSelected = on;
+
+        // Use GameObject active state for the shader so showing/hiding works reliably
         if (selectedShader != null)
             selectedShader.gameObject.SetActive(on);
     }
 
-    // Handle clicks
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            OnLeftClick();
-            if (isFull)
-            {
-                Debug.Log($"Clicked on slot: {itemName} (Quantity: {quantity})");
-                if (SharedDescriptionText != null)
-                    SharedDescriptionText.text = itemDescription;
-            }
-            else
-            {
-                if (SharedDescriptionText != null)
-                    SharedDescriptionText.text = "";
-            }
-        }
+        // update shared description immediately for feedback
+        OnLeftClick();
+
+        // notify UI / controller about the click so it can manage selection exclusivity
+        OnAnySlotClicked?.Invoke(this);
     }
 
     private void OnLeftClick()
     {
-        // notify everyone which slot was clicked; handler will toggle clicked slot and deselect all others
-        OnAnySlotClicked?.Invoke(this);
-    }
-
-    // Called for every slot when any slot is clicked
-    private void HandleAnySlotClicked(ItemSlot clicked)
-    {
-        if (clicked == this)
-        {
-            SetSelected(!thisItemSelected);
-
-            if (!thisItemSelected && SharedDescriptionText != null)
-                SharedDescriptionText.text = "";
-            else if (thisItemSelected && SharedDescriptionText != null)
-                SharedDescriptionText.text = itemDescription;
-
-            // Notify UI to refresh
-            OnAnySelectionChanged?.Invoke();
-        }
-        else
-        {
-            if (thisItemSelected)
-                SetSelected(false);
-        }
+        if (SharedDescriptionText != null)
+            SharedDescriptionText.text = isFull ? itemDescription : "";
     }
 }
