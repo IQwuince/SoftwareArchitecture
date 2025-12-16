@@ -1,4 +1,6 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.InputSystem;
 
 public class PlayerLevel : MonoBehaviour
 {
@@ -11,7 +13,16 @@ public class PlayerLevel : MonoBehaviour
     public AnimationCurve healthPerLevel;
     public AnimationCurve damagePerLevel;
 
+    [Header("UI")]
+    public GameObject UpgradeUI;
+    public TextMeshProUGUI HealthText;
+    public TextMeshProUGUI DamageText;
+    public TextMeshProUGUI HealthCostText;
+    public TextMeshProUGUI DamageCostText;
 
+    [Header("Value levels")]
+    public int healthLevel = 1;
+    public int damageLevel = 1;
 
     private int lastLevel = 0;
 
@@ -19,6 +30,11 @@ public class PlayerLevel : MonoBehaviour
     {
         if (levelSystem != null)
             lastLevel = levelSystem.currentLevel;
+
+        HealthText.SetText("Health:100 Level:1");
+        DamageText.SetText("Damage:10 Level:1");
+        HealthCostText.SetText("1 level point");
+        DamageCostText.SetText("1 level point");
     }
 
     private void Update()
@@ -28,23 +44,53 @@ public class PlayerLevel : MonoBehaviour
             int levelsGained = levelSystem.currentLevel - lastLevel;
             for (int i = 0; i < levelsGained; i++)
             {
-                IncreaseDamage();
-                IncreaseHealth();
             }
             lastLevel = levelSystem.currentLevel;
         }
+
+        if (Keyboard.current != null && Keyboard.current.uKey.wasPressedThisFrame)
+        {
+            UpgradeUI.SetActive(!UpgradeUI.activeSelf);
+        }
     }
 
-    void IncreaseHealth()
+    private void UpdateUI()
     {
-        float healthIncrease = healthPerLevel.Evaluate(levelSystem.currentLevel);
-        playerHealth.maxHealth += Mathf.RoundToInt(healthIncrease);
-        playerHealth.currentHealth += Mathf.RoundToInt(healthIncrease);
-        playerHealth.PlayerHealthUI();
+        HealthText.SetText("Health:" + playerHealth.maxHealth + " Level:" + healthLevel);
+        DamageText.SetText("Damage:" + playerCombat.damageAmount + " Level:" + damageLevel);
+
     }
-    void IncreaseDamage()
+
+    public void IncreaseHealth()
     {
-        float damageIncrease = damagePerLevel.Evaluate(levelSystem.currentLevel);
-        playerCombat.damageAmount += Mathf.RoundToInt(damageIncrease);
+        if (levelSystem.levelPoints > 0)
+        {
+            float healthIncrease = healthPerLevel.Evaluate(levelSystem.currentLevel);
+            playerHealth.maxHealth += Mathf.RoundToInt(healthIncrease);
+            playerHealth.currentHealth += Mathf.RoundToInt(healthIncrease);
+            playerHealth.PlayerHealthUI();
+            healthLevel++;
+            levelSystem.levelPoints--;
+            UpdateUI();
+            levelSystem.UpdateUI();
+
+        }
+
+        
     }
+    public void IncreaseDamage()
+    {
+        if (levelSystem.levelPoints > 0)
+        {
+            float damageIncrease = damagePerLevel.Evaluate(levelSystem.currentLevel);
+            playerCombat.damageAmount += Mathf.RoundToInt(damageIncrease);
+            damageLevel++;
+            levelSystem.levelPoints--;
+            UpdateUI();
+            levelSystem.UpdateUI();
+        }
+    }
+           
+
+
 }

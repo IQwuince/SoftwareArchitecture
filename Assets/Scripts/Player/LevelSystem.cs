@@ -66,7 +66,7 @@ public class LevelSystem : MonoBehaviour
         if (nextLevelExperience <= previousLevelExperience) nextLevelExperience = previousLevelExperience + 1;
     }
 
-    void UpdateUI()
+    public void UpdateUI()
     {
         int startExperience = totalExperience - previousLevelExperience;
         int endExperience = nextLevelExperience - previousLevelExperience;

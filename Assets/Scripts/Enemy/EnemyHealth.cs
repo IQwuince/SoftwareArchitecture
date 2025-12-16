@@ -39,7 +39,6 @@ public class EnemyHealth : GenericHealth
     {
         if (currentHealth <= minHealth)
         {
-            levelSystem.AddExperience(0);
             enemyLoot.GiveRewards();
             OnEnemyKilledEvent?.Invoke(enemyPrefab);
             GameObject.Destroy(this.gameObject);
