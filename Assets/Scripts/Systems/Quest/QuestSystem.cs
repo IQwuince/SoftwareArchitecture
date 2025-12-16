@@ -10,13 +10,13 @@ public class QuestSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        EnemyHealth.OnEnemyKilled += RegisterEnemyKill;
+        EnemyHealth.OnEnemyKilledEvent += RegisterEnemyKill;
         Inventory.OnItemPickedUp += RegisterItemPickup;
     }
 
     private void OnDisable()
     {
-        EnemyHealth.OnEnemyKilled -= RegisterEnemyKill;
+        EnemyHealth.OnEnemyKilledEvent -= RegisterEnemyKill;
         Inventory.OnItemPickedUp -= RegisterItemPickup;
     }
 

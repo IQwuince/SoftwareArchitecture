@@ -4,19 +4,22 @@ using System;
 
 public class EnemyHealth : GenericHealth
 {
-    public static event Action<GameObject> OnEnemyKilled;
+    public static event Action<GameObject> OnEnemyKilledEvent;
 
     [Header("Enemy Prefab")]
     public GameObject enemyPrefab; // Assign this in the inspector or via spawner
 
     private TextMeshPro healthTextEnemy;
     private LevelSystem levelSystem;
+    private EnemyLoot enemyLoot;
 
     private void Start()
     {
         healthTextEnemy = GetComponentInChildren<TextMeshPro>();
         levelSystem = UnityEngine.Object.FindFirstObjectByType<LevelSystem>();
+        enemyLoot = UnityEngine.Object.FindFirstObjectByType<EnemyLoot>();
         UpdateHealthUI();
+        
     }
 
     public override void TakeDamage(int damage)
@@ -36,8 +39,9 @@ public class EnemyHealth : GenericHealth
     {
         if (currentHealth <= minHealth)
         {
-            levelSystem.AddExperience(150);
-            OnEnemyKilled?.Invoke(enemyPrefab);
+            levelSystem.AddExperience(0);
+            enemyLoot.GiveRewards();
+            OnEnemyKilledEvent?.Invoke(enemyPrefab);
             GameObject.Destroy(this.gameObject);
         }
     }

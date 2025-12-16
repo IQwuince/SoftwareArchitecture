@@ -32,14 +32,14 @@ public class QuestManager : MonoBehaviour
     private void OnEnable()
     {
         // Subscribe to game events
-        EnemyHealth.OnEnemyKilled += HandleEnemyKilled;
+        EnemyHealth.OnEnemyKilledEvent += HandleEnemyKilled;
         Inventory.OnItemPickedUp += HandleItemPickedUp;
     }
 
     private void OnDisable()
     {
         // Unsubscribe from game events
-        EnemyHealth.OnEnemyKilled -= HandleEnemyKilled;
+        EnemyHealth.OnEnemyKilledEvent -= HandleEnemyKilled;
         Inventory.OnItemPickedUp -= HandleItemPickedUp;
     }
 
