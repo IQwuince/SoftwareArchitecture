@@ -41,17 +41,32 @@ public abstract class EnemyMovement2D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        
     }
 
     protected virtual void Start()
-    {// Find the player by tag at runtime
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
+    {
+        // Find the player by tag at runtime
+        if (player == null)
         {
-            player = playerObj.transform;
-            playerMovement = player.GetComponent<PlayerMovement>();
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                // Use the parent transform if it exists, otherwise use the player's own transform
+                player = playerObj.transform.parent != null ? playerObj.transform.parent : playerObj.transform;
+            }
         }
+
+        // Try to get PlayerMovement robustly
+        if (player != null)
+        {
+            playerMovement = player.GetComponentInChildren<PlayerMovement>();
+            if (playerMovement == null)
+                playerMovement = player.GetComponent<PlayerMovement>();
+        }
+
+        // final fallback: locate any PlayerMovement in the scene
+        if (playerMovement == null)
+            playerMovement = FindObjectOfType<PlayerMovement>();
 
         OnPatrolSetup();
     }
@@ -94,6 +109,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
                 break;
         }
     }
+
     public void UpdateUIState()
     {
         if (stateText != null)
@@ -117,6 +133,12 @@ public abstract class EnemyMovement2D : MonoBehaviour
             BuildCheckpointSnapshot(lastKnownCheckpoints);
             searchIndex = 0;
             searchStartTime = Time.time;
+
+            // If snapshot produced nothing, try to seed with last seen player position
+            if (lastKnownCheckpoints.Count == 0 && lastSeenPlayerPos != Vector2.zero)
+            {
+                lastKnownCheckpoints.Add(lastSeenPlayerPos);
+            }
         }
 
         if (newState == EnemyState.Patrol)
@@ -155,6 +177,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
         if (HasReachedTarget(target))
         {
             searchIndex++;
+            // small pause when reaching a checkpoint
             StopHorizontal();
             return;
         }
@@ -205,16 +228,27 @@ public abstract class EnemyMovement2D : MonoBehaviour
     // Helpers
     protected void StopHorizontal()
     {
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        if (Mathf.Abs(rb.linearVelocity.x) > 0.01f)
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 
     // Snapshot building (default newest-first copy)
+    // This base implementation copies the player's checkpointTrail as-is (newest first).
+    // Derived classes may override to filter or project to ground.
     protected virtual void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        if (playerMovement == null || playerMovement.checkpointTrail == null) return;
+        // ensure we have a valid PlayerMovement reference
+        if (playerMovement == null)
+        {
+            playerMovement = FindObjectOfType<PlayerMovement>();
+            if (playerMovement == null || playerMovement.checkpointTrail == null) return;
+        }
 
-        for (int i = playerMovement.checkpointTrail.Count - 1; i >= 0; i--)
-            dest.Add((Vector2)playerMovement.checkpointTrail[i]);
+        var trail = playerMovement.checkpointTrail;
+        for (int i = trail.Count - 1; i >= 0; i--)
+        {
+            dest.Add((Vector2)trail[i]);
+        }
     }
 
     // Abstract movement hooks derived classes must implement
@@ -225,6 +259,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
     // Patrol hooks
     protected abstract void OnPatrolSetup();
     protected abstract void MovePatrol();
+
     private void OnDrawGizmos()
     {
         if (player == null) return;
@@ -259,6 +294,4 @@ public abstract class EnemyMovement2D : MonoBehaviour
             Gizmos.DrawLine(enemyPos, playerPos);
         }
     }
-
-
 }

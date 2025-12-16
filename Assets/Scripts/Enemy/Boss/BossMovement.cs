@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class GroundChaserEnemy : EnemyMovement2D
+public class BossMovement : EnemyMovement2D
 {
     [Header("Ground Patrol Settings")]
     [SerializeField] private LayerMask groundLayer;
@@ -16,9 +16,7 @@ public class GroundChaserEnemy : EnemyMovement2D
 
     protected override void OnPatrolSetup()
     {
-        // ensure we start facing a direction (keep existing transform scale or sprite)
-        // patrolDirection remains as configured; optionally detect nearest free side here
-
+        // keep current facing direction / sprite
     }
 
     protected override void MovePatrol()
@@ -40,7 +38,7 @@ public class GroundChaserEnemy : EnemyMovement2D
         {
             patrolDirection *= -1;
             lastFlipTime = Time.time;
-            StopHorizontal(); // small pause to avoid tunneling
+            // flip and continue next frame (avoid hard-stop every frame)
             return;
         }
 
@@ -55,6 +53,9 @@ public class GroundChaserEnemy : EnemyMovement2D
     protected override void MoveChase(Vector2 toPlayer)
     {
         float dirX = Mathf.Sign(toPlayer.x);
+        if (Mathf.Approximately(dirX, 0f))
+            dirX = toPlayer.x >= 0f ? 1f : -1f;
+
         rb.linearVelocity = new Vector2(dirX * moveSpeed, rb.linearVelocity.y);
 
         if (spriteRenderer != null)
@@ -63,7 +64,11 @@ public class GroundChaserEnemy : EnemyMovement2D
 
     protected override void MoveSearchToward(Vector2 target)
     {
-        float dirX = Mathf.Sign(target.x - transform.position.x);
+        float dx = target.x - transform.position.x;
+        float dirX = Mathf.Sign(dx);
+        if (Mathf.Approximately(dirX, 0f) && Mathf.Abs(dx) > 0.01f)
+            dirX = dx > 0 ? 1f : -1f;
+
         rb.linearVelocity = new Vector2(dirX * moveSpeed, rb.linearVelocity.y);
 
         if (spriteRenderer != null)
@@ -75,17 +80,24 @@ public class GroundChaserEnemy : EnemyMovement2D
         return Mathf.Abs(target.x - transform.position.x) <= reachThreshold;
     }
 
+    // Build checkpoint snapshot but filter out points that are unreachable (player is too high).
+    // Project each checkpoint vertically down to the ground (so the enemy can navigate to ground points).
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        if (playerMovement == null || playerMovement.checkpointTrail == null) return;
+        // ensure we have playerMovement reference
+        if (playerMovement == null || playerMovement.checkpointTrail == null)
+        {
+            playerMovement = FindFirstObjectByType<PlayerMovement>();
+            if (playerMovement == null || playerMovement.checkpointTrail == null) return;
+        }
 
         // newest-first, filter unreachable and project to ground
         for (int i = playerMovement.checkpointTrail.Count - 1; i >= 0; i--)
         {
             Vector3 cp = playerMovement.checkpointTrail[i];
 
-            // vertical filter (enemy cannot jump)
-            if (cp.y - transform.position.y > 0.5f) continue;
+            // vertical filter (enemy cannot jump) - allow small tolerance
+            if (cp.y - transform.position.y > 0.6f) continue;
 
             // project to ground to avoid "air" points
             Vector2 start = new Vector2(cp.x, cp.y + 0.1f);
@@ -93,7 +105,7 @@ public class GroundChaserEnemy : EnemyMovement2D
             if (groundHit.collider != null)
                 dest.Add(groundHit.point);
             else
-                dest.Add(new Vector2(cp.x, transform.position.y)); // fallback
+                dest.Add(new Vector2(cp.x, transform.position.y)); // fallback to same Y as enemy
         }
     }
 }
