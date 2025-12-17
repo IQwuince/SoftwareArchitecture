@@ -9,13 +9,13 @@ public class EnemyHealth : GenericHealth
     [Header("Enemy Prefab")]
     public GameObject enemyPrefab; // Assign this in the inspector or via spawner
 
-    private TextMeshPro healthTextEnemy;
+    [SerializeField] private TextMeshPro healthTextEnemy;
     private LevelSystem levelSystem;
     private EnemyLoot enemyLoot;
 
     private void Start()
     {
-        healthTextEnemy = GetComponentInChildren<TextMeshPro>();
+        if (healthTextEnemy != null) healthTextEnemy = GetComponentInChildren<TextMeshPro>();
         levelSystem = UnityEngine.Object.FindFirstObjectByType<LevelSystem>();
         enemyLoot = UnityEngine.Object.FindFirstObjectByType<EnemyLoot>();
         UpdateHealthUI();
@@ -39,7 +39,7 @@ public class EnemyHealth : GenericHealth
     {
         if (currentHealth <= minHealth)
         {
-            enemyLoot.GiveRewards();
+            if (enemyLoot != null) enemyLoot.GiveRewards();
             OnEnemyKilledEvent?.Invoke(enemyPrefab);
             GameObject.Destroy(this.gameObject);
         }
@@ -47,6 +47,6 @@ public class EnemyHealth : GenericHealth
 
     private void UpdateHealthUI()
     {
-        healthTextEnemy.text = currentHealth.ToString() + " / " + maxHealth.ToString();
+       if(healthTextEnemy != null) healthTextEnemy.text = currentHealth.ToString() + " / " + maxHealth.ToString();
     }
 }

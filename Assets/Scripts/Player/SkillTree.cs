@@ -5,12 +5,16 @@ using UnityEngine.InputSystem;
 public class SkillTree : MonoBehaviour
 {
     [Header("References")]
-    public LevelSystem levelSystem;
+    private LevelSystem levelSystem;
 
     [Header("UI Elements")]
     public TextMeshProUGUI skillPointsText;
     public GameObject skillTreeUI;
 
+    private void Awake()
+    {
+        levelSystem = UnityEngine.Object.FindFirstObjectByType<LevelSystem>();
+    }
     private void Start()
     {
 

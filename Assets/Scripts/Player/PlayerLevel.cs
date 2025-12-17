@@ -5,13 +5,13 @@ using UnityEngine.InputSystem;
 public class PlayerLevel : MonoBehaviour
 {
     [Header("References")]
-    public LevelSystem levelSystem;
-    public PlayerHealth playerHealth;
-    public PlayerCombat playerCombat;
+    private LevelSystem levelSystem;
+    private PlayerHealth playerHealth;
+    private PlayerCombat playerCombat;
 
     [Header("Level Up Stats")]
-    public AnimationCurve healthPerLevel;
-    public AnimationCurve damagePerLevel;
+    [SerializeField] private AnimationCurve healthPerLevel;
+    [SerializeField] private AnimationCurve damagePerLevel;
 
     [Header("UI")]
     public GameObject UpgradeUI;
@@ -21,20 +21,25 @@ public class PlayerLevel : MonoBehaviour
     public TextMeshProUGUI DamageCostText;
 
     [Header("Value levels")]
-    public int healthLevel = 1;
-    public int damageLevel = 1;
-
+    [SerializeField] private int healthLevel = 1;
+    [SerializeField] private int damageLevel = 1;
     private int lastLevel = 0;
+
+    private void Awake()
+    {
+        levelSystem = GetComponent<LevelSystem>();
+        playerHealth = GetComponent<PlayerHealth>();
+        playerCombat = GetComponent<PlayerCombat>();
+    }
 
     private void Start()
     {
-        if (levelSystem != null)
-            lastLevel = levelSystem.currentLevel;
+        if (levelSystem != null) lastLevel = levelSystem.currentLevel;
 
-        HealthText.SetText("Health:100 Level:1");
-        DamageText.SetText("Damage:10 Level:1");
-        HealthCostText.SetText("1 level point");
-        DamageCostText.SetText("1 level point");
+        if (HealthText != null) HealthText.SetText("Health:100 Level:1");
+        if (DamageText != null) DamageText.SetText("Damage:10 Level:1");
+        if (HealthCostText != null) HealthCostText.SetText("1 level point");
+        if (DamageCostText != null) DamageCostText.SetText("1 level point");
     }
 
     private void Update()
@@ -56,8 +61,8 @@ public class PlayerLevel : MonoBehaviour
 
     private void UpdateUI()
     {
-        HealthText.SetText("Health:" + playerHealth.maxHealth + " Level:" + healthLevel);
-        DamageText.SetText("Damage:" + playerCombat.damageAmount + " Level:" + damageLevel);
+        if (HealthText != null) HealthText.SetText("Health:" + playerHealth.maxHealth + " Level:" + healthLevel);
+        if (DamageText != null) DamageText.SetText("Damage:" + playerCombat.damageAmount + " Level:" + damageLevel);
 
     }
 

@@ -7,9 +7,11 @@ public class TestDamage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D trigger)
     {
-        Debug.Log("collision");
+        if (trigger.CompareTag("Player"))
+        {
+            Debug.Log("collision");
             PlayerHealth.TakeDamage(setHealth);
             Debug.Log(PlayerHealth.currentHealth);
-        
+        }
     }
 }

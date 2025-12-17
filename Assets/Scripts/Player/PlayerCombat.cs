@@ -8,16 +8,19 @@ using UnityEngine.Rendering.Universal;
 public class PlayerCombat : MonoBehaviour
 {
     [Header("References")]
-    public BoxCollider2D meleeCollider;
-    public BoxCollider2D playerCollider;
-    public PlayerMovement pm;
-    public PlayerHealth playerHealth;
+    [SerializeField] private BoxCollider2D meleeCollider;
+    [SerializeField] private BoxCollider2D playerCollider;
+    private PlayerMovement pm;
 
     HashSet<EnemyHealth> IDamageable = new ();
     private float initialOffsetX;
 
     public int damageAmount = 10;
 
+    private void Awake()
+    {
+        pm = GetComponent<PlayerMovement>();
+    }
     void Start()
     {
         initialOffsetX = meleeCollider ? meleeCollider.transform.localPosition.x : 1f;

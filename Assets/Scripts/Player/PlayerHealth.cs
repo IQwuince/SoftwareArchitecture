@@ -46,8 +46,7 @@ public class PlayerHealth : GenericHealth
 
     public void PlayerHealthUI()
     {
-        healthText.text = currentHealth.ToString() + " / " + maxHealth.ToString();
-        //healthSlider.value = (float)currentHealth / maxHealth;
+        if (healthText != null) healthText.text = currentHealth.ToString() + " / " + maxHealth.ToString();
     }
 }
 

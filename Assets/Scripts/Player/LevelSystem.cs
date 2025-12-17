@@ -14,10 +14,10 @@ public class LevelSystem : MonoBehaviour
     int nextLevelExperience = 1;
 
     [Header("UI")]
-    [SerializeField] TextMeshProUGUI levelText;
-    [SerializeField] TextMeshProUGUI experienceText;
-    [SerializeField] Image experienceFill;
-    [SerializeField] TextMeshProUGUI levelPointsText;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI experienceText;
+    [SerializeField] private Image experienceFill;
+    [SerializeField] private TextMeshProUGUI levelPointsText;
 
     [Header("Levels")]
     public int levelPoints;
@@ -70,10 +70,10 @@ public class LevelSystem : MonoBehaviour
     {
         int startExperience = totalExperience - previousLevelExperience;
         int endExperience = nextLevelExperience - previousLevelExperience;
-        levelText.text = currentLevel.ToString();
-        levelPointsText.text = levelPoints.ToString();
-        experienceText.text = $"{startExperience} Exp / {endExperience} Exp";
-        experienceFill.fillAmount = endExperience > 0 ? (float)startExperience / endExperience : 0f;
+        if(levelText != null)levelText.text = currentLevel.ToString();
+        if (levelPointsText != null) levelPointsText.text = levelPoints.ToString();
+        if (experienceText != null) experienceText.text = $"{startExperience} Exp / {endExperience} Exp";
+        if ( experienceFill != null) experienceFill.fillAmount = endExperience > 0 ? (float)startExperience / endExperience : 0f;
     }
 
     void SpendLevel(int points)

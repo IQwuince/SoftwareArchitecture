@@ -8,7 +8,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
     [Header("References")]
     [SerializeField] protected EnemyHealth enemyHealth;
     [SerializeField] protected Transform player;
-    public TextMeshProUGUI stateText;
+    [SerializeField] TextMeshPro stateText;
 
     protected PlayerMovement playerMovement;
     protected Rigidbody2D rb;
@@ -66,7 +66,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
         // final fallback: locate any PlayerMovement in the scene
         if (playerMovement == null)
-            playerMovement = FindObjectOfType<PlayerMovement>();
+            playerMovement = UnityEngine.Object.FindFirstObjectByType<PlayerMovement>();
 
         OnPatrolSetup();
     }
