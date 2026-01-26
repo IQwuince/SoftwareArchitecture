@@ -1,6 +1,7 @@
 using UnityEngine;
-using IQwuince.Quests;
 
+namespace IQwuince.Quests
+{
     [CreateAssetMenu(fileName = "New Collect Quest", menuName = "Quests/Collect Items Quest")]
     public class CollectQuestSO : QuestSO
     {
@@ -20,9 +21,6 @@ using IQwuince.Quests;
             description = "Gather a specified number of items";
         }
 
-        /// <summary>
-        /// Validates the collect quest data.
-        /// </summary>
         public override bool Validate(out string error)
         {
             // First check base validation (but skip target check for collect quests)
@@ -55,4 +53,5 @@ using IQwuince.Quests;
             return true;
         }
     }
+}
 

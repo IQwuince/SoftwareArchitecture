@@ -32,9 +32,6 @@ namespace IQwuince.Quests
         [Tooltip("Optional icon for UI display")]
         public Sprite icon;
 
-        /// <summary>
-        /// Validates the quest data. Called from editor.
-        /// </summary>
         public virtual bool Validate(out string error)
         {
             if (string.IsNullOrEmpty(id))

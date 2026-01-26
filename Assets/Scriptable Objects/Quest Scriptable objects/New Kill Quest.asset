@@ -16,7 +16,7 @@ MonoBehaviour:
   title: Kill Enemies
   description: Defeat a specified number of enemies
   questType: 0
-  target: {fileID: 518981167348514716, guid: 8b855ff52e6d88d44b75eeb841128aaa, type: 3}
+  target: {fileID: 6354875274338379478, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}
   targetCount: 1
   reward:
     xp: 200

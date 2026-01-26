@@ -18,9 +18,6 @@ namespace IQwuince.Quests
             isCompleted = false;
         }
 
-        /// <summary>
-        /// Increment progress by the specified amount
-        /// </summary>
         public void IncrementProgress(int amount = 1)
         {
             if (isCompleted) return;
@@ -34,9 +31,6 @@ namespace IQwuince.Quests
             }
         }
 
-        /// <summary>
-        /// Mark quest as completed
-        /// </summary>
         private void Complete()
         {
             if (isCompleted) return;
@@ -45,9 +39,6 @@ namespace IQwuince.Quests
             OnQuestCompleted?.Invoke(this);
         }
 
-        /// <summary>
-        /// Get progress as a formatted string
-        /// </summary>
         public string GetProgressString()
         {
             return $"{currentProgress}/{questData.targetCount}";

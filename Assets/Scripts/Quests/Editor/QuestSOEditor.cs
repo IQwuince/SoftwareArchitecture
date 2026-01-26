@@ -3,9 +3,6 @@ using UnityEngine;
 
 namespace IQwuince.Quests.Editor
 {
-    /// <summary>
-    /// Custom editor for QuestSO to show validation warnings
-    /// </summary>
     [CustomEditor(typeof(QuestSO), true)]
     public class QuestSOEditor : UnityEditor.Editor
     {

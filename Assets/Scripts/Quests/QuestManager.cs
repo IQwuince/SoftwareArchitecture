@@ -1,227 +1,201 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using IQwuince.Quests;
 using UnityEngine.InputSystem;
 
-
-public class QuestManager : MonoBehaviour
+namespace IQwuince.Quests
 {
-    [Header("Sample Quests for Testing")]
-    [Tooltip("Sample Kill quest activated with O key")]
-    public KillQuestSO sampleKillQuest;
-
-    [Tooltip("Sample Collect quest activated with P key")]
-    public CollectQuestSO sampleCollectQuest;
-
-    [Header("Inventory Reference")]
-    [Tooltip("Reference to the player's inventory for checking collected items")]
-    public Inventory playerInventory;
-
-    // Active quests dictionary - one per type
-    private Dictionary<QuestType, Quest> activeQuests = new Dictionary<QuestType, Quest>();
-
-    // Progress tracking
-    private Dictionary<GameObject, int> enemyKillCounts = new Dictionary<GameObject, int>();
-
-    // Events
-    public event Action<Quest> OnQuestActivated;
-    public event Action<Quest> OnQuestProgressChanged;
-    public event Action<Quest> OnQuestCompleted;
-
-    private void OnEnable()
+    public class QuestManager : MonoBehaviour
     {
-        // Subscribe to game events
-        EnemyHealth.OnEnemyKilledEvent += HandleEnemyKilled;
-        Inventory.OnItemPickedUp += HandleItemPickedUp;
-    }
+        [Header("Quests")]
+        [Tooltip("Sample Kill quest activated with O key")]
+        public KillQuestSO testKillQuest;
 
-    private void OnDisable()
-    {
-        // Unsubscribe from game events
-        EnemyHealth.OnEnemyKilledEvent -= HandleEnemyKilled;
-        Inventory.OnItemPickedUp -= HandleItemPickedUp;
-    }
+        [Tooltip("Sample Collect quest activated with P key")]
+        public CollectQuestSO testCollectQuest;
 
-    private void Update()
-    {
-        // Check for sample quest activation keys
-        if (Keyboard.current != null && Keyboard.current.oKey.wasPressedThisFrame)
+        [Header("Inventory Reference")]
+        [Tooltip("Reference to the player's inventory")]
+        public Inventory playerInventory;
+
+        // Active quests dictionary - one per type
+        private Dictionary<QuestType, Quest> activeQuests = new Dictionary<QuestType, Quest>();
+
+        // Progress tracking
+        private Dictionary<GameObject, int> enemyKillCounts = new Dictionary<GameObject, int>();
+
+        // Events
+        public event Action<Quest> OnQuestActivated;
+        public event Action<Quest> OnQuestProgressChanged;
+        public event Action<Quest> OnQuestCompleted;
+
+        private void OnEnable()
         {
-            ActivateQuest(sampleKillQuest);
+            // Subscribe to game events
+            EnemyHealth.OnEnemyKilledEvent += HandleEnemyKilled;
+            Inventory.OnItemPickedUp += HandleItemPickedUp;
         }
 
-        if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+        private void OnDisable()
         {
-            ActivateQuest(sampleCollectQuest);
-        }
-    }
-
-    /// <summary>
-    /// Activate a quest. Returns false if a quest of the same type is already active.
-    /// </summary>
-    public bool ActivateQuest(QuestSO questData)
-    {
-        if (questData == null)
-        {
-            Debug.LogWarning("Cannot activate null quest");
-            return false;
+            // Unsubscribe from game events
+            EnemyHealth.OnEnemyKilledEvent -= HandleEnemyKilled;
+            Inventory.OnItemPickedUp -= HandleItemPickedUp;
         }
 
-        // Check if quest of same type is already active
-        if (activeQuests.ContainsKey(questData.questType))
+        private void Update()
         {
-            Debug.LogWarning($"Cannot activate {questData.title}: A {questData.questType} quest is already active");
-            return false;
-        }
-
-        // Validate quest data
-        if (!questData.Validate(out string error))
-        {
-            Debug.LogError($"Cannot activate invalid quest {questData.title}: {error}");
-            return false;
-        }
-
-        // Create and activate quest
-        Quest quest = new Quest(questData);
-        quest.OnProgressChanged += HandleQuestProgressChanged;
-        quest.OnQuestCompleted += HandleQuestCompleted;
-
-        activeQuests[questData.questType] = quest;
-
-        Debug.Log($"Quest activated: {questData.title}");
-        OnQuestActivated?.Invoke(quest);
-
-        return true;
-    }
-
-    /// <summary>
-    /// Get the active quest of a specific type, or null if none active
-    /// </summary>
-    public Quest GetActiveQuest(QuestType type)
-    {
-        return activeQuests.TryGetValue(type, out Quest quest) ? quest : null;
-    }
-
-    /// <summary>
-    /// Get all active quests
-    /// </summary>
-    public IEnumerable<Quest> GetActiveQuests()
-    {
-        return activeQuests.Values;
-    }
-
-    /// <summary>
-    /// Handle enemy killed event from game systems
-    /// </summary>
-    private void HandleEnemyKilled(GameObject enemyPrefab)
-    {
-        if (enemyPrefab == null) return;
-
-        // Track kill count
-        if (!enemyKillCounts.ContainsKey(enemyPrefab))
-            enemyKillCounts[enemyPrefab] = 0;
-        enemyKillCounts[enemyPrefab]++;
-
-        // Check if any Kill quest matches this enemy
-        if (activeQuests.TryGetValue(QuestType.Kill, out Quest killQuest))
-        {
-            if (killQuest.questData.target == enemyPrefab)
+            // Check for sample quest activation keys
+            if (Keyboard.current != null && Keyboard.current.oKey.wasPressedThisFrame)
             {
-                killQuest.IncrementProgress();
-                Debug.Log($"Quest progress: {killQuest.questData.title} - {killQuest.GetProgressString()}");
+                
+                ActivateQuest(testKillQuest);
+            }
+
+            if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+            {
+                ActivateQuest(testCollectQuest);
             }
         }
-    }
 
-    /// <summary>
-    /// Handle item picked up event from inventory system.
-    /// Checks the inventory count against the quest requirements using ItemData.
-    /// </summary>
-    private void HandleItemPickedUp(string itemName)
-    {
-        // Check if there's an active collect quest
-        if (!activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
-            return;
-
-        // Get the collect quest data
-        CollectQuestSO collectQuestData = collectQuest.questData as CollectQuestSO;
-        if (collectQuestData == null || collectQuestData.itemToCollect == null)
-            return;
-
-        // If the player inventory is not assigned, try to find it
-        if (playerInventory == null)
+        public bool ActivateQuest(QuestSO questData)
         {
-            playerInventory = FindPlayerInventory();
+
+            if (questData == null)
+            {
+                Debug.LogWarning("Cannot activate quest");
+                return false;
+            }
+
+            // Check if quest of same type is already active
+            if (activeQuests.ContainsKey(questData.questType))
+            {
+                Debug.LogWarning($"Cannot activate {questData.title}: A {questData.questType} quest is already active");
+                return false;
+            }
+
+            // Validate quest data
+            if (!questData.Validate(out string error))
+            {
+                Debug.LogError($"Cannot activate invalid quest {questData.title}: {error}");
+                return false;
+            }
+
+            // Create and activate quest
+            Quest quest = new Quest(questData);
+            quest.OnProgressChanged += HandleQuestProgressChanged;
+            quest.OnQuestCompleted += HandleQuestCompleted;
+
+            activeQuests[questData.questType] = quest;
+
+            Debug.Log($"Quest activated: {questData.title}");
+            OnQuestActivated?.Invoke(quest);
+
+            return true;
+        }
+
+        public Quest GetActiveQuest(QuestType type)
+        {
+            return activeQuests.TryGetValue(type, out Quest quest) ? quest : null;
+        }
+
+        public IEnumerable<Quest> GetActiveQuests()
+        {
+            return activeQuests.Values;
+        }
+
+        private void HandleEnemyKilled(GameObject enemyPrefab)
+        {
+            if (enemyPrefab == null) return;
+
+            // Track kill count
+            if (!enemyKillCounts.ContainsKey(enemyPrefab))
+                enemyKillCounts[enemyPrefab] = 0;
+            enemyKillCounts[enemyPrefab]++;
+
+            // Check if any Kill quest matches this enemy
+            if (activeQuests.TryGetValue(QuestType.Kill, out Quest killQuest))
+            {
+                if (killQuest.questData.target == enemyPrefab)
+                {
+                    killQuest.IncrementProgress();
+                    Debug.Log($"Quest progress: {killQuest.questData.title} - {killQuest.GetProgressString()}");
+                }
+            }
+        }
+        private void HandleItemPickedUp(string itemName)
+        {
+            // Check if there's an active collect quest
+            if (!activeQuests.TryGetValue(QuestType.Collect, out Quest collectQuest))
+                return;
+
+            // Get the collect quest data
+            CollectQuestSO collectQuestData = collectQuest.questData as CollectQuestSO;
+            if (collectQuestData == null || collectQuestData.itemToCollect == null)
+                return;
+
+            // If the player inventory is not assigned, try to find it
             if (playerInventory == null)
             {
-                Debug.LogWarning("QuestManager: Player inventory not found. Cannot track collect quest progress.");
-                return;
+                playerInventory = FindPlayerInventory();
+                if (playerInventory == null)
+                {
+                    Debug.LogWarning("QuestManager: Player inventory not found. Cannot track collect quest progress.");
+                    return;
+                }
+            }
+
+            // Get the current count of the required item in the inventory
+            int currentCount = playerInventory.GetItemCount(collectQuestData.itemToCollect);
+
+            // Update progress to match inventory count
+            if (currentCount > collectQuest.currentProgress)
+            {
+                int progressToAdd = currentCount - collectQuest.currentProgress;
+                collectQuest.IncrementProgress(progressToAdd);
+                Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
             }
         }
 
-        // Get the current count of the required item in the inventory
-        int currentCount = playerInventory.GetItemCount(collectQuestData.itemToCollect);
-
-        // Update progress to match inventory count
-        if (currentCount > collectQuest.currentProgress)
+        private Inventory FindPlayerInventory()
         {
-            int progressToAdd = currentCount - collectQuest.currentProgress;
-            collectQuest.IncrementProgress(progressToAdd);
-            Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
-        }
-    }
+            // Try to find via singleton first
+            var singleton = UnityEngine.Object.FindFirstObjectByType<SingletonPlayerInventoryController>();
+            if (singleton != null && singleton.inventory != null)
+            {
+                return singleton.inventory;
+            }
 
-    /// <summary>
-    /// Attempts to find the player inventory in the scene
-    /// </summary>
-    private Inventory FindPlayerInventory()
-    {
-        // Try to find via singleton first
-        var singleton = FindObjectOfType<SingletonPlayerInventoryController>();
-        if (singleton != null && singleton.inventory != null)
-        {
-            return singleton.inventory;
+            // Fallback to finding any Inventory component
+            return UnityEngine.Object.FindFirstObjectByType<Inventory>();
         }
 
-        // Fallback to finding any Inventory component
-        return FindObjectOfType<Inventory>();
-    }
+        [System.Obsolete("Collect quests now use ItemData and inventory tracking. This method is kept for backward compatibility but has no effect on collect quests.")]
+        public void UpdateCollectProgress(GameObject itemPrefab)
+        {
+            // This method is kept for backward compatibility but is no longer used
+            // Collect quests now automatically track progress via inventory system
+            Debug.LogWarning("UpdateCollectProgress(GameObject) is deprecated. Collect quests now use ItemData and inventory tracking.");
+        }
+        public void UpdateKillProgress(GameObject enemyPrefab)
+        {
+            HandleEnemyKilled(enemyPrefab);
+        }
 
-    /// <summary>
-    /// Public API for game systems to notify item collection by GameObject reference.
-    /// Note: This method is deprecated for collect quests. Collect quests now use ItemData 
-    /// and automatically track progress via the inventory system.
-    /// </summary>
-    [System.Obsolete("Collect quests now use ItemData and inventory tracking. This method is kept for backward compatibility but has no effect on collect quests.")]
-    public void UpdateCollectProgress(GameObject itemPrefab)
-    {
-        // This method is kept for backward compatibility but is no longer used
-        // Collect quests now automatically track progress via inventory system
-        Debug.LogWarning("UpdateCollectProgress(GameObject) is deprecated. Collect quests now use ItemData and inventory tracking.");
-    }
+        private void HandleQuestProgressChanged(Quest quest)
+        {
+            OnQuestProgressChanged?.Invoke(quest);
+        }
 
-    /// <summary>
-    /// Public API for game systems to notify enemy kill by GameObject reference
-    /// </summary>
-    public void UpdateKillProgress(GameObject enemyPrefab)
-    {
-        HandleEnemyKilled(enemyPrefab);
-    }
+        private void HandleQuestCompleted(Quest quest)
+        {
+            Debug.Log($"Quest completed: {quest.questData.title}! Rewards: XP={quest.questData.reward.xp}, ItemID={quest.questData.reward.itemId}, Currency={quest.questData.reward.currency}");
 
-    private void HandleQuestProgressChanged(Quest quest)
-    {
-        OnQuestProgressChanged?.Invoke(quest);
-    }
+            // Remove from active quests
+            activeQuests.Remove(quest.questData.questType);
 
-    private void HandleQuestCompleted(Quest quest)
-    {
-        Debug.Log($"Quest completed: {quest.questData.title}! Rewards: XP={quest.questData.reward.xp}, ItemID={quest.questData.reward.itemId}, Currency={quest.questData.reward.currency}");
-
-        // Remove from active quests
-        activeQuests.Remove(quest.questData.questType);
-
-        OnQuestCompleted?.Invoke(quest);
+            OnQuestCompleted?.Invoke(quest);
+        }
     }
 }
 
