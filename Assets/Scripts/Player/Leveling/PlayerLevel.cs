@@ -71,9 +71,8 @@ public class PlayerLevel : MonoBehaviour
     {
         if (levelSystem.levelPoints > 0)
         {
-            float healthIncrease = healthPerLevel.Evaluate(levelSystem.currentLevel);
-            playerHealth.maxHealth += Mathf.RoundToInt(healthIncrease);
-            playerHealth.currentHealth += Mathf.RoundToInt(healthIncrease);
+            float healthIncrease = Mathf.RoundToInt(healthPerLevel.Evaluate(levelSystem.currentLevel));
+            EventBus.Publish(new PlayerHealthUpgradeEvent(Mathf.RoundToInt(healthIncrease)));
             EventBus.Publish(new UpdatePlayerUIEvent(this));
             healthLevel++;
             levelSystem.levelPoints--;
@@ -82,14 +81,14 @@ public class PlayerLevel : MonoBehaviour
 
         }
 
-        
+
     }
     public void IncreaseDamage()
     {
         if (levelSystem.levelPoints > 0)
         {
-            float damageIncrease = damagePerLevel.Evaluate(levelSystem.currentLevel);
-            playerCombat.damageAmount += Mathf.RoundToInt(damageIncrease);
+            float damageIncrease = Mathf.RoundToInt(damagePerLevel.Evaluate(levelSystem.currentLevel));
+            EventBus.Publish(new PlayerDamageUpgradeEvent(Mathf.RoundToInt(damageIncrease)));
             damageLevel++;
             levelSystem.levelPoints--;
             UpdateUI();

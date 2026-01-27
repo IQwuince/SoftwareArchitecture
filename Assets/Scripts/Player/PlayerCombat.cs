@@ -9,13 +9,13 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private BoxCollider2D meleeCollider;
-    [SerializeField] private BoxCollider2D playerCollider;
+    [SerializeField] private CapsuleCollider2D playerCollider;
     private PlayerMovement pm;
 
     HashSet<EnemyHealth> IDamageable = new ();
     private float initialOffsetX;
 
-    public int damageAmount = 10;
+    public int damageAmount;
 
     private void Awake()
     {
@@ -24,6 +24,14 @@ public class PlayerCombat : MonoBehaviour
     void Start()
     {
         initialOffsetX = meleeCollider ? meleeCollider.transform.localPosition.x : 1f;
+    }
+    private void OnEnable()
+    {
+        EventBus.Subscribe<PlayerDamageUpgradeEvent>(IncreaseDamage);
+    }
+    void OnDisable()
+    {
+        EventBus.UnSubscribe<PlayerDamageUpgradeEvent>(IncreaseDamage);
     }
 
     private void Update()
@@ -57,12 +65,17 @@ public class PlayerCombat : MonoBehaviour
             IDamageable.Remove(eh);
         }
     }
+    
     private void DoDamage()
     {
         foreach (var eh in IDamageable)
         {
           eh.TakeDamage(damageAmount);  
         }
+    }
+    void IncreaseDamage(PlayerDamageUpgradeEvent playerDamageUpgradeEvent)
+    {
+        damageAmount += playerDamageUpgradeEvent.damageValue;
     }
 
 

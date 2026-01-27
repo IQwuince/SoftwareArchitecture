@@ -5,9 +5,23 @@ using UnityEngine.UIElements;
 public class PlayerHealth : GenericHealth
 {
 
-
     private void Start()
     {
+        PlayerHealthUI();
+    }
+    void OnEnable()
+    {
+        EventBus.Subscribe<PlayerHealthUpgradeEvent>(PlayerValueUpgrade);
+    }
+    void OnDisable()
+    {
+        EventBus.UnSubscribe<PlayerHealthUpgradeEvent>(PlayerValueUpgrade);
+    }
+
+    void PlayerValueUpgrade(PlayerHealthUpgradeEvent playerHealthUpgradeEvent)
+    {
+        maxHealth += playerHealthUpgradeEvent.healthValue;
+        currentHealth += playerHealthUpgradeEvent.healthValue;
         PlayerHealthUI();
     }
 
@@ -34,6 +48,7 @@ public class PlayerHealth : GenericHealth
         }
     }
 
+    
     public void PlayerHealthUI()
     {
         EventBus.Publish(new PlayerUIValueChangeEvent(currentHealth, minHealth, maxHealth));
