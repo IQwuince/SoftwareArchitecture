@@ -4,11 +4,6 @@ using UnityEngine.UIElements;
 
 public class PlayerHealth : GenericHealth
 {
-    [Header("UI Elements")]
-    public Slider healthSlider;
-    public TextMeshProUGUI healthText;
-
-    public static event System.Action OnPlayerDamaged;
 
 
     private void Start()
@@ -16,15 +11,11 @@ public class PlayerHealth : GenericHealth
         PlayerHealthUI();
     }
 
-    private void Update()
-    {
-    }
-
     public override void TakeDamage(int damage)
     {
         base.TakeDamage(damage);
         PlayerHealthUI();
-        OnPlayerDamaged?.Invoke(); 
+        EventBus.Publish(new PlayerDamagedEvent(this));
         DiePlayer();
     }
 
@@ -40,13 +31,12 @@ public class PlayerHealth : GenericHealth
             Debug.Log("Dead");
             GameManager.Instance.DiePlayer();
             PlayerHealthUI();
-
         }
     }
 
     public void PlayerHealthUI()
     {
-        if (healthText != null) healthText.text = currentHealth.ToString() + " / " + maxHealth.ToString();
+        EventBus.Publish(new PlayerUIValueChangeEvent(currentHealth, minHealth, maxHealth));
     }
 }
 

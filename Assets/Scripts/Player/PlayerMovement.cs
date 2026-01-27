@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isKnockedBack = false;
     private float knockbackTimer = 0f;
 
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -119,16 +120,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerHealth.OnPlayerDamaged += OnPlayerDamaged;
+        EventBus.Subscribe<PlayerDamagedEvent>(OnPlayerDamaged);
     }
 
     private void OnDisable()
     {
-        PlayerHealth.OnPlayerDamaged -= OnPlayerDamaged;
+       EventBus.UnSubscribe<PlayerDamagedEvent>(OnPlayerDamaged);
     }
 
-    // Called when player is damaged. This sets a knockback velocity and enters knockback state.
-    private void OnPlayerDamaged()
+
+    private void OnPlayerDamaged(PlayerDamagedEvent onPlayerDamagedEvent)
     {
         // Determine horizontal direction based on sprite flip (facing right -> not flipped)
         float kbX = isFlipped ? horizontalBounceBackForce : -horizontalBounceBackForce;

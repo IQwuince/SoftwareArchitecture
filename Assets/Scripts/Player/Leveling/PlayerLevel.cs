@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using Assets.Scripts.EventBus.Events;
 
 public class PlayerLevel : MonoBehaviour
 {
@@ -73,7 +74,7 @@ public class PlayerLevel : MonoBehaviour
             float healthIncrease = healthPerLevel.Evaluate(levelSystem.currentLevel);
             playerHealth.maxHealth += Mathf.RoundToInt(healthIncrease);
             playerHealth.currentHealth += Mathf.RoundToInt(healthIncrease);
-            playerHealth.PlayerHealthUI();
+            EventBus.Publish(new UpdatePlayerUIEvent(this));
             healthLevel++;
             levelSystem.levelPoints--;
             UpdateUI();
