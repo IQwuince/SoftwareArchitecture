@@ -7,8 +7,6 @@ public class PlayerLevel : MonoBehaviour
 {
     [Header("References")]
     private LevelSystem levelSystem;
-    private PlayerHealth playerHealth;
-    private PlayerCombat playerCombat;
 
     [Header("Level Up Stats")]
     [SerializeField] private AnimationCurve healthPerLevel;
@@ -29,8 +27,6 @@ public class PlayerLevel : MonoBehaviour
     private void Awake()
     {
         levelSystem = GetComponent<LevelSystem>();
-        playerHealth = GetComponent<PlayerHealth>();
-        playerCombat = GetComponent<PlayerCombat>();
     }
 
     private void Start()
@@ -60,13 +56,6 @@ public class PlayerLevel : MonoBehaviour
         }
     }
 
-    private void UpdateUI()
-    {
-        if (HealthText != null) HealthText.SetText("Health:" + playerHealth.maxHealth + " Level:" + healthLevel);
-        if (DamageText != null) DamageText.SetText("Damage:" + playerCombat.damageAmount + " Level:" + damageLevel);
-
-    }
-
     public void IncreaseHealth()
     {
         if (levelSystem.levelPoints > 0)
@@ -76,7 +65,6 @@ public class PlayerLevel : MonoBehaviour
             EventBus.Publish(new UpdatePlayerUIEvent(this));
             healthLevel++;
             levelSystem.levelPoints--;
-            UpdateUI();
             levelSystem.UpdateUI();
 
         }
@@ -91,7 +79,6 @@ public class PlayerLevel : MonoBehaviour
             EventBus.Publish(new PlayerDamageUpgradeEvent(Mathf.RoundToInt(damageIncrease)));
             damageLevel++;
             levelSystem.levelPoints--;
-            UpdateUI();
             levelSystem.UpdateUI();
         }
     }

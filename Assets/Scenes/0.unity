@@ -4002,7 +4002,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   meleeCollider: {fileID: 159211798}
-  playerCollider: {fileID: 0}
+  playerCollider: {fileID: 682394720}
   damageAmount: 10
 --- !u!114 &682394719
 MonoBehaviour:
@@ -4042,7 +4042,25 @@ MonoBehaviour:
     m_RotationOrder: 4
   damagePerLevel:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 10
+      value: 250
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -4087,8 +4105,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
+  m_Offset: {x: 0, y: -0.11}
+  m_Size: {x: 0.67, y: 0.75}
   m_Direction: 0
 --- !u!1 &687764652
 GameObject:
@@ -4626,7 +4644,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 802757363}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 682394719}
+        m_TargetAssemblyTypeName: PlayerLevel, Assembly-CSharp
+        m_MethodName: IncreaseHealth
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &802757363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5411,7 +5441,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1085611719}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 682394719}
+        m_TargetAssemblyTypeName: PlayerLevel, Assembly-CSharp
+        m_MethodName: IncreaseDamage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1085611719
 MonoBehaviour:
   m_ObjectHideFlags: 0
