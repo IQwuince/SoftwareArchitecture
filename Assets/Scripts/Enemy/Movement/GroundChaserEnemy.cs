@@ -85,16 +85,15 @@ public class GroundChaserEnemy : EnemyMovement2D
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
         // ensure we have playerMovement reference
-        if (playerMovement == null || playerMovement.checkpointTrail == null)
+        if ( PlayerCheckPoint == null)
         {
-            playerMovement = FindFirstObjectByType<PlayerMovement>();
-            if (playerMovement == null || playerMovement.checkpointTrail == null) return;
+            if (PlayerCheckPoint == null) return;
         }
 
         // newest-first, filter unreachable and project to ground
-        for (int i = playerMovement.checkpointTrail.Count - 1; i >= 0; i--)
+        for (int i = PlayerCheckPoint.Count - 1; i >= 0; i--)
         {
-            Vector3 cp = playerMovement.checkpointTrail[i];
+            Vector3 cp = PlayerCheckPoint[i];
 
             // vertical filter (enemy cannot jump) - allow small tolerance
             if (cp.y - transform.position.y > 0.6f) continue;

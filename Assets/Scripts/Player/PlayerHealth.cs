@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 public class PlayerHealth : GenericHealth
 {
-
+    public PlayerMovement playerMovement;
     private void Start()
     {
         PlayerHealthUI();
@@ -12,10 +12,12 @@ public class PlayerHealth : GenericHealth
     void OnEnable()
     {
         EventBus.Subscribe<PlayerHealthUpgradeEvent>(PlayerValueUpgrade);
+        EventBus.Subscribe<PlayerDamagedEvent>(OnPlayerDamaged);
     }
     void OnDisable()
     {
         EventBus.UnSubscribe<PlayerHealthUpgradeEvent>(PlayerValueUpgrade);
+        EventBus.UnSubscribe<PlayerDamagedEvent>(OnPlayerDamaged);
     }
 
     void PlayerValueUpgrade(PlayerHealthUpgradeEvent playerHealthUpgradeEvent)
@@ -24,12 +26,16 @@ public class PlayerHealth : GenericHealth
         currentHealth += playerHealthUpgradeEvent.healthValue;
         PlayerHealthUI();
     }
+    void OnPlayerDamaged(PlayerDamagedEvent playerDamagedEvent)
+    {
+        TakeDamage(playerDamagedEvent.damageTaken);
+    }
 
     public override void TakeDamage(int damage)
     {
         base.TakeDamage(damage);
         PlayerHealthUI();
-        EventBus.Publish(new PlayerDamagedEvent(this));
+        playerMovement.OnPlayerDamagedMovement();
         DiePlayer();
     }
 
@@ -53,5 +59,7 @@ public class PlayerHealth : GenericHealth
     {
         EventBus.Publish(new PlayerUIValueChangeEvent(currentHealth, minHealth, maxHealth));
     }
+
+    
 }
 

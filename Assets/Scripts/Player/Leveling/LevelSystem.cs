@@ -27,6 +27,14 @@ public class LevelSystem : MonoBehaviour
         UpdateLevel(); 
         UpdateUI();
     }
+    private void OnEnable()
+    {
+        EventBus.Subscribe<LevelSystemAddXpEvent>(AddXpEvent);
+    }
+    private void OnDisable()
+    {
+        EventBus.UnSubscribe<LevelSystemAddXpEvent>(AddXpEvent);
+    }
 
     private void Update()
     {
@@ -49,6 +57,10 @@ public class LevelSystem : MonoBehaviour
         UpdateUI();
     }
 
+    void AddXpEvent(LevelSystemAddXpEvent levelSystemAddXpEvent)
+    {
+        AddExperience(levelSystemAddXpEvent.XpAdd);
+    }
     public void CheckForLevelUp()
     {
         while (totalExperience >= nextLevelExperience)

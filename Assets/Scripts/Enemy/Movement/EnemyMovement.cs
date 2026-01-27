@@ -7,11 +7,12 @@ public abstract class EnemyMovement2D : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] protected EnemyHealth enemyHealth;
-    [SerializeField] protected Transform player;
+     protected Transform playerPosition;
     [SerializeField] TextMeshPro stateText;
 
-    protected PlayerMovement playerMovement;
+    //protected PlayerMovement playerMovement;
     protected Rigidbody2D rb;
+    protected CircleCollider2D playerDetectionCollider;
     protected SpriteRenderer spriteRenderer;
 
     [Header("General Settings")]
@@ -37,6 +38,9 @@ public abstract class EnemyMovement2D : MonoBehaviour
     protected int searchIndex;
     protected float searchStartTime;
 
+    //Player trail
+    protected List<Vector2> PlayerCheckPoint = new();
+   
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -45,35 +49,30 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     protected virtual void Start()
     {
-        // Find the player by tag at runtime
-        if (player == null)
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
-            {
-                // Use the parent transform if it exists, otherwise use the player's own transform
-                player = playerObj.transform.parent != null ? playerObj.transform.parent : playerObj.transform;
-            }
-        }
-
-        // Try to get PlayerMovement robustly
-        if (player != null)
-        {
-            playerMovement = player.GetComponentInChildren<PlayerMovement>();
-            if (playerMovement == null)
-                playerMovement = player.GetComponent<PlayerMovement>();
-        }
-
-        // final fallback: locate any PlayerMovement in the scene
-        if (playerMovement == null)
-            playerMovement = UnityEngine.Object.FindFirstObjectByType<PlayerMovement>();
-
         OnPatrolSetup();
     }
 
+    private void OnEnable()
+    {
+        EventBus.Subscribe<EnemyPlayerTrailCheckPointEvent>(OnPlayerConnected);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.UnSubscribe<EnemyPlayerTrailCheckPointEvent>(OnPlayerConnected);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            playerPosition = collision.transform;
+        }
+    }
     protected virtual void Update()
     {
-        if (player == null || enemyHealth == null || enemyHealth.currentHealth <= 0) return;
+
+        if (playerPosition == null || enemyHealth == null || enemyHealth.currentHealth <= 0) return;
 
         if (Time.time - lastRaycastTime >= raycastInterval)
         {
@@ -118,6 +117,8 @@ public abstract class EnemyMovement2D : MonoBehaviour
         }
     }
 
+    
+
     // State machine helpers
     protected void EnterState(EnemyState newState)
     {
@@ -149,12 +150,12 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     protected virtual void TickChase()
     {
-        if (player == null) return;
-        Vector2 toPlayer = (Vector2)player.position - (Vector2)transform.position;
+        if (playerPosition == null) return;
+        Vector2 toPlayer = (Vector2)playerPosition.position - (Vector2)transform.position;
         MoveChase(toPlayer);
 
         // if actively chasing, update last seen pos
-        lastSeenPlayerPos = player.position;
+        lastSeenPlayerPos = playerPosition.position;
     }
 
     protected virtual void TickSearch()
@@ -197,20 +198,20 @@ public abstract class EnemyMovement2D : MonoBehaviour
     // LOS
     protected void HandleLineOfSight()
     {
-        if (player == null) return;
+        if (playerPosition == null) return;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector2.Distance(transform.position, playerPosition.position);
         if (distanceToPlayer > detectionRange) return;
 
         Vector2 origin = GetEyeOrigin();
-        Vector2 dir = ((Vector2)player.position - origin).normalized;
+        Vector2 dir = ((Vector2)playerPosition.position - origin).normalized;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, dir, distanceToPlayer, obstacleLayer);
         bool blocked = hit.collider != null;
 
         if (!blocked)
         {
-            lastSeenPlayerPos = player.position;
+            lastSeenPlayerPos = playerPosition.position;
             EnterState(EnemyState.Chase);
         }
         else
@@ -237,7 +238,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
     // Derived classes may override to filter or project to ground.
     protected virtual void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        // ensure we have a valid PlayerMovement reference
+        /*// ensure we have a valid PlayerMovement reference
         if (playerMovement == null)
         {
             playerMovement = FindObjectOfType<PlayerMovement>();
@@ -248,7 +249,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
         for (int i = trail.Count - 1; i >= 0; i--)
         {
             dest.Add((Vector2)trail[i]);
-        }
+        }*/
     }
 
     // Abstract movement hooks derived classes must implement
@@ -262,10 +263,10 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (player == null) return;
+        if (playerPosition == null) return;
 
         Vector3 enemyPos = transform.position;
-        Vector3 playerPos = player.position;
+        Vector3 playerPos = playerPosition.position;
         float distance = Vector3.Distance(enemyPos, playerPos);
         Vector3 direction = (playerPos - enemyPos).normalized;
         Vector3 rangeEnd = enemyPos + direction * detectionRange;
@@ -293,5 +294,10 @@ public abstract class EnemyMovement2D : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawLine(enemyPos, playerPos);
         }
+    }
+
+     void OnPlayerConnected(EnemyPlayerTrailCheckPointEvent EnemyPlayerTrailCheckPointEvent)
+    {
+        PlayerCheckPoint = EnemyPlayerTrailCheckPointEvent.CheckpointTrailT;
     }
 }

@@ -3,8 +3,11 @@ using UnityEngine;
 public class PlayerDamagedEvent : IGameEvent
 {
     public PlayerHealth PlayerHealth { get; }
-    public PlayerDamagedEvent(PlayerHealth playerHealth)
+    public int damageTaken;
+    public PlayerDamagedEvent(int damageE)
     {
-        PlayerHealth = playerHealth;
+        damageTaken = damageE;
+
+
     }
 }

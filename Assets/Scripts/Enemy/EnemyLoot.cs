@@ -13,14 +13,6 @@ public class EnemyLoot : MonoBehaviour
     [Header("Variables xp drop")]
     public int XPReward;
 
-    [Header("References")]
-    private LevelSystem levelSystem;
-
-    private void Awake()
-    {
-        levelSystem = UnityEngine.Object.FindFirstObjectByType<LevelSystem>();
-    }
-
     private void GiveItems()
     {
 
@@ -59,7 +51,7 @@ public class EnemyLoot : MonoBehaviour
 
     private void GiveXP()
     {
-        levelSystem.AddExperience(XPReward);
+        EventBus.Publish(new LevelSystemAddXpEvent(XPReward));
     }
 
     public void GiveRewards()

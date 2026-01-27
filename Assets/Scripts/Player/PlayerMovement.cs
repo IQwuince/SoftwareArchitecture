@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isFlipped;
 
     [Header("Checkpoint Trail")]
-    public float checkpointInterval = 0.5f;
+    public float checkpointInterval = 1;
     public int maxCheckpoints = 20;
     public List<Vector3> checkpointTrail = new List<Vector3>();
     private float checkpointTimer;
@@ -118,18 +118,8 @@ public class PlayerMovement : MonoBehaviour
             checkpointTrail.RemoveAt(0);
     }
 
-    private void OnEnable()
-    {
-        EventBus.Subscribe<PlayerDamagedEvent>(OnPlayerDamaged);
-    }
 
-    private void OnDisable()
-    {
-       EventBus.UnSubscribe<PlayerDamagedEvent>(OnPlayerDamaged);
-    }
-
-
-    private void OnPlayerDamaged(PlayerDamagedEvent onPlayerDamagedEvent)
+    public void OnPlayerDamagedMovement()
     {
         // Determine horizontal direction based on sprite flip (facing right -> not flipped)
         float kbX = isFlipped ? horizontalBounceBackForce : -horizontalBounceBackForce;

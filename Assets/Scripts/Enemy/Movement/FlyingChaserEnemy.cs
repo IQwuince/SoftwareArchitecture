@@ -74,9 +74,9 @@ public class FlyingChaserEnemy : EnemyMovement2D
     // For flying enemies we accept checkpoints as-is (no ground projection)
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        if (playerMovement == null || playerMovement.checkpointTrail == null) return;
+        if (PlayerCheckPoint == null) return;
 
-        for (int i = playerMovement.checkpointTrail.Count - 1; i >= 0; i--)
-            dest.Add((Vector2)playerMovement.checkpointTrail[i]);
+        for (int i = PlayerCheckPoint.Count - 1; i >= 0; i--)
+            dest.Add((Vector2)PlayerCheckPoint[i]);
     }
 }
