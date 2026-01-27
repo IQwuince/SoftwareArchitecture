@@ -11,15 +11,11 @@ public class PlayerUpgradeMenu : MonoBehaviour
 
     [Header("Health Upgrade")]
     [SerializeField] private TMP_Text healthLevelText;
-    [SerializeField] private TMP_Text healthValueText;
-    [SerializeField] private TMP_Text healthCostText;
-    [SerializeField] private Button healthUpgradeButton;
+    [SerializeField] private TMP_Text healthUpgradeCostText;
 
     [Header("Damage Upgrade")]
     [SerializeField] private TMP_Text damageLevelText;
-    [SerializeField] private TMP_Text damageValueText;
-    [SerializeField] private TMP_Text damageCostText;
-    [SerializeField] private Button damageUpgradeButton;
+    [SerializeField] private TMP_Text damageUpgradeCostText;
 
     [Header("Upgrade Settings")]
     [SerializeField] private AnimationCurve upgradeCostCurve;
@@ -39,8 +35,6 @@ public class PlayerUpgradeMenu : MonoBehaviour
     private void Start()
     {
         menuPanel.SetActive(false);
-        if (healthUpgradeButton != null) healthUpgradeButton.onClick.AddListener(UpgradeHealth);
-        if (damageUpgradeButton != null) damageUpgradeButton.onClick.AddListener(UpgradeDamage);
         UpdateUI();
     }
 
@@ -86,21 +80,12 @@ public class PlayerUpgradeMenu : MonoBehaviour
         // Health
         int healthValue = baseHealth + (healthLevel - 1) * healthPerLevel;
         if (healthLevelText != null) healthLevelText.text = $"Level: {healthLevel}";
-        if (healthValueText != null) healthValueText.text = $"Health: {healthValue}";
-        if (healthCostText != null) healthCostText.text = $"Cost: {GetUpgradeCost(healthLevel)}";
+        if (healthUpgradeCostText != null) healthUpgradeCostText.text = $"Cost: {GetUpgradeCost(healthLevel)}";
 
         // Damage
         int damageValue = baseDamage + (damageLevel - 1) * damagePerLevel;
         if (damageLevelText != null) damageLevelText.text = $"Level: {damageLevel}";
-        if (damageValueText != null) damageValueText.text = $"Damage: {damageValue}";
-        if (damageCostText != null) damageCostText.text = $"Cost: {GetUpgradeCost(damageLevel)}";
-
-        // Enable/disable buttons based on points
-        if (healthUpgradeButton != null) healthUpgradeButton.interactable = levelSystem.levelPoints >= GetUpgradeCost(healthLevel);
-        if (damageUpgradeButton != null) damageUpgradeButton.interactable = levelSystem.levelPoints >= GetUpgradeCost(damageLevel);
+        if (damageUpgradeCostText != null) damageUpgradeCostText.text = $"Cost: {GetUpgradeCost(damageLevel)}";
     }
 
-    // Optionally, expose current values for other scripts
-    public int GetCurrentHealth() => baseHealth + (healthLevel - 1) * healthPerLevel;
-    public int GetCurrentDamage() => baseDamage + (damageLevel - 1) * damagePerLevel;
 }
