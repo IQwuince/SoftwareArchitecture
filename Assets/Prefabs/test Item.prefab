@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51219c627611b074a852e5cbd72289bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemContainer
-  itemData: {fileID: 11400000, guid: 3d774711bb4c6084c8b703507df1cc53, type: 2}
+  itemData: {fileID: 11400000, guid: bb37c70d2c690ec49bc700189f4cc73d, type: 2}
 --- !u!114 &8212083843480134979
 MonoBehaviour:
   m_ObjectHideFlags: 0

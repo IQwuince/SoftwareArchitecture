@@ -296,8 +296,8 @@ public abstract class EnemyMovement2D : MonoBehaviour
         }
     }
 
-     void OnPlayerConnected(EnemyPlayerTrailCheckPointEvent EnemyPlayerTrailCheckPointEvent)
+    private void OnPlayerConnected(EnemyPlayerTrailCheckPointEvent enemyPlayerTrailCheckPointEvent)
     {
-        PlayerCheckPoint = EnemyPlayerTrailCheckPointEvent.CheckpointTrailT;
+        PlayerCheckPoint = enemyPlayerTrailCheckPointEvent.CheckpointTrailT;
     }
 }

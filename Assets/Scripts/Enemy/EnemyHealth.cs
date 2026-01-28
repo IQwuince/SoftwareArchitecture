@@ -10,13 +10,11 @@ public class EnemyHealth : GenericHealth
     public GameObject enemyPrefab; // Assign this in the inspector or via spawner
 
     [SerializeField] private TextMeshPro healthTextEnemy;
-    private LevelSystem levelSystem;
     private EnemyLoot enemyLoot;
 
     private void Start()
     {
         if (healthTextEnemy != null) healthTextEnemy = GetComponentInChildren<TextMeshPro>();
-        levelSystem = UnityEngine.Object.FindFirstObjectByType<LevelSystem>();
         enemyLoot = UnityEngine.Object.FindFirstObjectByType<EnemyLoot>();
         UpdateHealthUI();
         
