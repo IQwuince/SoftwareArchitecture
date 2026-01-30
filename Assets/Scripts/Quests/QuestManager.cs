@@ -16,7 +16,7 @@ namespace IQwuince.Quests
 
         [Header("Inventory Reference")]
         [Tooltip("Reference to the player's inventory")]
-        //public Inventory playerInventory;
+        public Inventory playerInventory;
 
         // Active quests dictionary - one per type
         private Dictionary<QuestType, Quest> activeQuests = new Dictionary<QuestType, Quest>();
@@ -29,15 +29,11 @@ namespace IQwuince.Quests
         public event Action<Quest> OnQuestProgressChanged;
         public event Action<Quest> OnQuestCompleted;
 
-        //Inventory
-        protected int playerInventoryItemCount;
-
         private void OnEnable()
         {
             // Subscribe to game events
             EnemyHealth.OnEnemyKilledEvent += HandleEnemyKilled;
             Inventory.OnItemPickedUp += HandleItemPickedUp;
-            EventBus.Subscribe<InventoryItemCountEvent>(InventoryItemCount);
         }
 
         private void OnDisable()
@@ -45,7 +41,6 @@ namespace IQwuince.Quests
             // Unsubscribe from game events
             EnemyHealth.OnEnemyKilledEvent -= HandleEnemyKilled;
             Inventory.OnItemPickedUp -= HandleItemPickedUp;
-            EventBus.UnSubscribe<InventoryItemCountEvent>(InventoryItemCount);
         }
 
         private void Update()
@@ -53,7 +48,7 @@ namespace IQwuince.Quests
             // Check for sample quest activation keys
             if (Keyboard.current != null && Keyboard.current.oKey.wasPressedThisFrame)
             {
-                
+
                 ActivateQuest(testKillQuest);
             }
 
@@ -65,7 +60,6 @@ namespace IQwuince.Quests
 
         public bool ActivateQuest(QuestSO questData)
         {
-            Debug.Log("Active quest");
 
             if (questData == null)
             {
@@ -110,11 +104,6 @@ namespace IQwuince.Quests
             return activeQuests.Values;
         }
 
-        void InventoryItemCount(InventoryItemCountEvent InventoryItemCountEvent)
-        {
-            playerInventoryItemCount = InventoryItemCountEvent.itemCountT;
-        }
-
         private void HandleEnemyKilled(GameObject enemyPrefab)
         {
             if (enemyPrefab == null) return;
@@ -145,7 +134,7 @@ namespace IQwuince.Quests
             if (collectQuestData == null || collectQuestData.itemToCollect == null)
                 return;
 
-           /* // If the player inventory is not assigned, try to find it
+            // If the player inventory is not assigned, try to find it
             if (playerInventory == null)
             {
                 playerInventory = FindPlayerInventory();
@@ -154,19 +143,21 @@ namespace IQwuince.Quests
                     Debug.LogWarning("QuestManager: Player inventory not found. Cannot track collect quest progress.");
                     return;
                 }
-            }*/
+            }
 
+            // Get the current count of the required item in the inventory
+            int currentCount = playerInventory.GetItemCount(collectQuestData.itemToCollect);
 
             // Update progress to match inventory count
-            if (playerInventoryItemCount > collectQuest.currentProgress)
+            if (currentCount > collectQuest.currentProgress)
             {
-                int progressToAdd = playerInventoryItemCount - collectQuest.currentProgress;
+                int progressToAdd = currentCount - collectQuest.currentProgress;
                 collectQuest.IncrementProgress(progressToAdd);
                 Debug.Log($"Quest progress: {collectQuest.questData.title} - {collectQuest.GetProgressString()}");
             }
         }
 
-        /*private Inventory FindPlayerInventory()
+        private Inventory FindPlayerInventory()
         {
             // Try to find via singleton first
             var singleton = UnityEngine.Object.FindFirstObjectByType<SingletonPlayerInventoryController>();
@@ -177,7 +168,7 @@ namespace IQwuince.Quests
 
             // Fallback to finding any Inventory component
             return UnityEngine.Object.FindFirstObjectByType<Inventory>();
-        }*/
+        }
 
         [System.Obsolete("Collect quests now use ItemData and inventory tracking. This method is kept for backward compatibility but has no effect on collect quests.")]
         public void UpdateCollectProgress(GameObject itemPrefab)
@@ -207,4 +198,5 @@ namespace IQwuince.Quests
         }
     }
 }
+
 

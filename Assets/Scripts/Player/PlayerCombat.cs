@@ -12,6 +12,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private CapsuleCollider2D playerCollider;
     private PlayerMovement pm;
 
+    [Header("Animations")]
+    public Animator attackingLeftAnimator;
+    public Animator attackingRightAnimator;
+
     HashSet<EnemyHealth> IDamageable = new ();
     private float initialOffsetX;
 
@@ -40,6 +44,14 @@ public class PlayerCombat : MonoBehaviour
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
                 DoDamage();
+                if (pm.isFlipped == true)
+                {
+                attackingLeftAnimator.SetTrigger("AttackingLeft");
+                }
+             if (pm.isFlipped == false)
+            {
+                attackingRightAnimator.SetTrigger("AttackingRight");
+            }
         }
     }
 

@@ -33,6 +33,7 @@ public class PlayerHealth : GenericHealth
 
     public override void TakeDamage(int damage)
     {
+        Debug.Log("damage taken");
         base.TakeDamage(damage);
         PlayerHealthUI();
         playerMovement.OnPlayerDamagedMovement();

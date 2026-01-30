@@ -8,7 +8,7 @@ public class FlyingChaserEnemy : EnemyMovement2D
     [Header("Flying Patrol Settings")]
     [SerializeField] private float patrolRadius = 5f;
     [SerializeField] private float verticalSpeedMultiplier = 1f;
-    [SerializeField] private float wallCheckDistance = 0.35f;
+    [SerializeField] private float wallCheckDistance = 0.15f;
     [SerializeField] private float patrolY = 0f; // if 0, uses start Y
 
     private Vector2 patrolCenter;

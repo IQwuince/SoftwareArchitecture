@@ -67,8 +67,17 @@ public abstract class EnemyMovement2D : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             playerPosition = collision.transform;
+            EventBus.Publish(new EnemyInPlayerReachEvent(true));
         }
     }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            EventBus.Publish(new EnemyInPlayerReachEvent(false));
+        }
+    }
+
     protected virtual void Update()
     {
 
@@ -94,17 +103,17 @@ public abstract class EnemyMovement2D : MonoBehaviour
         switch (currentState)
         {
             case EnemyState.Chase:
-                TickChase();
+                Chase();
                 break;
             case EnemyState.Search:
-                TickSearch();
+                Search();
                 break;
             case EnemyState.Patrol:
-                TickPatrol();
+                Patrol();
                 break;
             case EnemyState.Idle:
             default:
-                TickIdle();
+                Idle();
                 break;
         }
     }
@@ -146,9 +155,9 @@ public abstract class EnemyMovement2D : MonoBehaviour
             OnPatrolSetup();
     }
 
-    protected virtual void TickIdle() => StopHorizontal();
+    protected virtual void Idle() => StopHorizontal();
 
-    protected virtual void TickChase()
+    protected virtual void Chase()
     {
         if (playerPosition == null) return;
         Vector2 toPlayer = (Vector2)playerPosition.position - (Vector2)transform.position;
@@ -158,7 +167,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
         lastSeenPlayerPos = playerPosition.position;
     }
 
-    protected virtual void TickSearch()
+    protected virtual void Search()
     {
         if (lastKnownCheckpoints.Count == 0)
         {
@@ -189,7 +198,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
             EnterState(EnemyState.Patrol);
     }
 
-    protected virtual void TickPatrol()
+    protected virtual void Patrol()
     {
         // Patrol-specific behavior implemented by derived classes
         MovePatrol();
