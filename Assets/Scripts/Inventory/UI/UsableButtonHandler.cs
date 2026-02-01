@@ -31,13 +31,10 @@ public class UsableButtonHandler : MonoBehaviour
             }
         }
 
-        // Example: Check for healing item by ID
         if (selectedSlot.ItemId == "HP_Potion_1")
         {
             healingUsable.UsableHealPlayer();
         }
-        // Remove the item from the inventory
-        // Find the actual Item object in the inventory by ID and name
         Item itemToRemove = null;
         foreach (var item in inventoryUI.inventory.Items)
         {

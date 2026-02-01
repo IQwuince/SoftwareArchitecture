@@ -7,7 +7,7 @@ public class EnemyHealth : GenericHealth
     public static event Action<GameObject> OnEnemyKilledEvent;
 
     [Header("Enemy Prefab")]
-    public GameObject enemyPrefab; // Assign this in the inspector or via spawner
+    public GameObject enemyPrefab;
     public EnemyMovement2D enemyMovement;
 
     [SerializeField] private TextMeshPro healthTextEnemy;

@@ -7,7 +7,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
     [Header("References")]
     [SerializeField] protected EnemyHealth enemyHealth;
     [SerializeField] protected DetectPlayer detectPlayer;
-    //protected Transform playerPosition;
+    protected Transform playerPosition;
     [SerializeField] TextMeshPro stateText;
 
     //protected PlayerMovement playerMovement;
@@ -70,22 +70,6 @@ public abstract class EnemyMovement2D : MonoBehaviour
         EventBus.UnSubscribe<EnemyDamagedEvent>(EnemyDamaged);
     }
 
-   /* private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            playerPosition = collision.transform;
-            EventBus.Publish(new EnemyInPlayerReachEvent(true));
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            EventBus.Publish(new EnemyInPlayerReachEvent(false));
-        }
-    }*/
-
     protected virtual void Update()
     {
         if (detectPlayer.detectPlayerPosition == null || enemyHealth == null || enemyHealth.currentHealth <= 0) return;
@@ -98,7 +82,6 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
         UpdateUIState();
 
-        // NOTE: knockback timer is handled in FixedUpdate to align with physics updates
     }
 
     protected virtual void FixedUpdate()
@@ -116,12 +99,9 @@ public abstract class EnemyMovement2D : MonoBehaviour
             if (knockbackTimer <= 0f)
             {
                 isKnockedBack = false;
-                // Optionally clear horizontal velocity when knockback ends, or let AI resume naturally
-                // rb.velocity = new Vector2(0f, rb.velocity.y);
             }
             else
             {
-                // Still in knockback; skip AI-driven movement so velocity isn't clobbered.
                 return;
             }
         }
@@ -168,7 +148,6 @@ public abstract class EnemyMovement2D : MonoBehaviour
             searchIndex = 0;
             searchStartTime = Time.time;
 
-            // If snapshot produced nothing, try to seed with last seen player position
             if (lastKnownCheckpoints.Count == 0 && lastSeenPlayerPos != Vector2.zero)
             {
                 lastKnownCheckpoints.Add(lastSeenPlayerPos);
@@ -265,13 +244,9 @@ public abstract class EnemyMovement2D : MonoBehaviour
         if (Mathf.Abs(rb.linearVelocity.x) > 0.01f)
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
-
-    // Snapshot building (default newest-first copy)
-    // This base implementation copies the player's checkpointTrail as-is (newest first).
-    // Derived classes may override to filter or project to ground.
     protected virtual void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        /*// ensure we have a valid PlayerMovement reference
+        /*
         if (playerMovement == null)
         {
             playerMovement = FindObjectOfType<PlayerMovement>();
@@ -336,17 +311,14 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     public void KnockBackEnemy()
     {
-        Vector2 direction = Vector2.up; // Default: just up
+        Vector2 direction = Vector2.up; 
 
         if (detectPlayer.detectPlayerPosition != null)
         {
-            // Knock away from the player horizontally, always up vertically
             float xDir = (transform.position.x - detectPlayer.detectPlayerPosition.position.x) >= 0 ? 1f : -1f;
-            // apply horizontal and vertical separately (no normalization) so both forces are effective
             direction = new Vector2(xDir, 1f);
         }
 
-        // Apply immediate physics via velocity so movement doesn't fight against it
         Vector2 knockVelocity = new Vector2(direction.x * horizontalBounceBackForce, direction.y * verticalBounceBackForce);
         rb.linearVelocity = knockVelocity;
 
@@ -356,6 +328,6 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     void EnemyDamaged(EnemyDamagedEvent enemyDamagedEvent)
     {
-        //KnockBackEnemy(); // currently commented out; EnemyHealth triggers KnockBackEnemy directly
+        KnockBackEnemy(); 
     }
 }

@@ -7,7 +7,7 @@ public class GroundChaserEnemy : EnemyMovement2D
     [Header("Ground Patrol Settings")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private float frontOffset = 0.4f;       // how far ahead to check for ground/wall
+    [SerializeField] private float frontOffset = 0.4f;       
     [SerializeField] private float groundCheckDistance = 0.8f;
     [SerializeField] private float wallCheckDistance = 0.35f;
     [SerializeField] private float flipCooldown = 0.12f;
@@ -17,12 +17,11 @@ public class GroundChaserEnemy : EnemyMovement2D
 
     protected override void OnPatrolSetup()
     {
-        // keep current facing direction / sprite
+        // keep current facing direction 
     }
 
     protected override void MovePatrol()
     {
-        // front origin (at feet level)
         Vector2 feetOffset = new Vector2(0f, -0.4f);
         Vector2 frontOrigin = (Vector2)transform.position + new Vector2(patrolDirection * frontOffset, feetOffset.y);
 

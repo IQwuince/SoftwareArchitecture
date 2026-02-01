@@ -173,8 +173,6 @@ namespace IQwuince.Quests
         [System.Obsolete("Collect quests now use ItemData and inventory tracking. This method is kept for backward compatibility but has no effect on collect quests.")]
         public void UpdateCollectProgress(GameObject itemPrefab)
         {
-            // This method is kept for backward compatibility but is no longer used
-            // Collect quests now automatically track progress via inventory system
             Debug.LogWarning("UpdateCollectProgress(GameObject) is deprecated. Collect quests now use ItemData and inventory tracking.");
         }
         public void UpdateKillProgress(GameObject enemyPrefab)

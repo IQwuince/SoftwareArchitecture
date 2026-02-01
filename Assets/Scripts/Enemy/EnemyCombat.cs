@@ -35,14 +35,13 @@ public class EnemyCombat : MonoBehaviour
     }
     private void Update()
     {
-        Debug.Log(playerInReach);
 
         if ( bullet == null || bulletPos == null) return;
 
         reloadTimer += Time.deltaTime;
 
-        if (reloadTimer > fireInterval)
-        {
+        if (reloadTimer > fireInterval && playerInReach == true)
+        {   
             reloadTimer = 0;
             Shoot();
         }

@@ -73,7 +73,6 @@ public class FlyingChaserEnemy : EnemyMovement2D
         return Vector2.Distance(transform.position, target) <= reachThreshold;
     }
 
-    // For flying enemies we accept checkpoints as-is (no ground projection)
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
         if (PlayerCheckPoint == null) return;

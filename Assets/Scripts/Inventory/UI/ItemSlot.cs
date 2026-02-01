@@ -14,7 +14,7 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     public int quantity;
     public Sprite itemSprite;
     public bool isFull;
-    public string ItemId; // Store the item's ID
+    public string ItemId; 
     public TMP_Text ItemNameText;
 
     [Header("Item Slot")]
@@ -22,7 +22,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Image itemImage;
 
     [Header("Item Description Slot")]
-    // These are no longer used for the shared description panel, keep only if needed per-slot.
     public Image itemDescriptionImage;
     public TMP_Text itemNameText;
     public TMP_Text itemDescriptionText;
@@ -30,13 +29,12 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
 
     [Header("References")]
     private Inventory inventory;
-    public Image selectedShader; // outline image (assign in inspector)
+    public Image selectedShader;
     public bool thisItemSelected;
     private string itemDescription;
 
     private void OnEnable()
     {
-        // ensure slot starts deselected
         SetSelected(false);
     }
 
@@ -91,17 +89,14 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     {
         thisItemSelected = on;
 
-        // Use GameObject active state for the shader so showing/hiding works reliably
         if (selectedShader != null)
             selectedShader.gameObject.SetActive(on);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // update shared description immediately for feedback
         OnLeftClick();
 
-        // notify UI / controller about the click so it can manage selection exclusivity
         OnAnySlotClicked?.Invoke(this);
     }
 

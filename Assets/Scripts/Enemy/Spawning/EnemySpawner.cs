@@ -115,8 +115,8 @@ public class EnemySpawner : MonoBehaviour
         activeEnemies.Add(go);
         originIndex[go] = chosenIndex;
 
-        chosen.MarkUsed();            // if your SpawnPointData already uses this
-        usedSpawnPoints.Add(chosenIndex); // hard one-time lock
+        chosen.MarkUsed(); 
+        usedSpawnPoints.Add(chosenIndex); 
     }
 
     public void NotifyEnemyRemoved(GameObject enemy)

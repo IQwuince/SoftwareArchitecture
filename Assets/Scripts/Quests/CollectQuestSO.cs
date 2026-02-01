@@ -23,7 +23,6 @@ namespace IQwuince.Quests
 
         public override bool Validate(out string error)
         {
-            // First check base validation (but skip target check for collect quests)
             if (string.IsNullOrEmpty(id))
             {
                 error = "Quest ID cannot be empty";
@@ -42,7 +41,6 @@ namespace IQwuince.Quests
                 return false;
             }
 
-            // Collect quests require ItemData instead of GameObject target
             if (itemToCollect == null)
             {
                 error = "Item to collect is required for collect quests";
