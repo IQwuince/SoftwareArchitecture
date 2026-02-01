@@ -11,7 +11,6 @@ public class EnemyBullletScript : MonoBehaviour
 
     private void Awake()
     {
-        Destroy(gameObject, lifetime);
     }
 
     private void Start()

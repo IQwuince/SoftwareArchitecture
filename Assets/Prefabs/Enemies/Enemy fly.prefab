@@ -516,7 +516,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4ec05dc7f52b984c9c38ab5d9151513, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damageAmount: 0
+  damageAmount: 20
   bullet: {fileID: 0}
   bulletPos: {fileID: 8402535119350472016}
   bulletDuration: 0
@@ -658,7 +658,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 4366178942990776957, guid: 603abb83490921841976d0f1b2045f23, type: 3}
-  m_Color: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

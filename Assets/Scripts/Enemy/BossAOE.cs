@@ -5,8 +5,6 @@ using System;
 
 public class BossAOE : MonoBehaviour
 {
-    
-
     [Header("AOE")]
     [SerializeField] private float aoeCountDown;
     [SerializeField] private float aoeTime;
@@ -56,6 +54,7 @@ public class BossAOE : MonoBehaviour
         while (true)
         {
             // Preparation phase
+            aoeCircle.SetActive(true);
             attackCirle.color = Color.white;
             yield return new WaitForSeconds(aoeCountDown);
 
@@ -67,6 +66,7 @@ public class BossAOE : MonoBehaviour
             // End attack
             attackCirle.color = Color.white;
             isAoeAttacking = false;
+            aoeCircle.SetActive(false); 
             yield return new WaitForSeconds(aoeRechargeTime);
         }
     }

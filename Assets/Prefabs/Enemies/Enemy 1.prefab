@@ -520,6 +520,7 @@ MonoBehaviour:
   bullet: {fileID: 6373973903570323999, guid: 8f46fdb92729a3d44b61167b35b2d362, type: 3}
   bulletPos: {fileID: 8402535119350472016}
   bulletDuration: 2
+  fireInterval: 0.5
 --- !u!61 &6482430075036208400
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -657,7 +658,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -6367560908665664636, guid: 40de9a8703e2e5a47882b0b86451c741, type: 3}
-  m_Color: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
