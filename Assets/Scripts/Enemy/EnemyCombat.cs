@@ -12,7 +12,8 @@ public class EnemyCombat : MonoBehaviour
 
     private float reloadTimer;
     [SerializeField] protected float bulletDuration;
-    // Get damage by touching enemy
+    [SerializeField] private float fireInterval;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -34,21 +35,20 @@ public class EnemyCombat : MonoBehaviour
     }
     private void Update()
     {
+        Debug.Log(playerInReach);
+
+        if ( bullet == null || bulletPos == null) return;
+
         reloadTimer += Time.deltaTime;
 
-        if (reloadTimer > 2)
+        if (reloadTimer > fireInterval)
         {
             reloadTimer = 0;
-            if (playerInReach == true)
-            {
-                Shoot();
-                playerInReach = false;
-            }
-            
+            Shoot();
         }
     }
 
-   protected virtual void Shoot()
+    protected virtual void Shoot()
     {
         Instantiate(bullet, bulletPos.position, Quaternion.identity);
     }

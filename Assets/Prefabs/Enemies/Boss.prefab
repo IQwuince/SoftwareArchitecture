@@ -78,7 +78,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -565,6 +565,7 @@ MonoBehaviour:
   bullet: {fileID: 6373973903570323999, guid: 8f46fdb92729a3d44b61167b35b2d362, type: 3}
   bulletPos: {fileID: 6230633638744861532}
   bulletDuration: 2
+  fireInterval: 5
   timesToShootBullet: 2
   wait: 0.5
 --- !u!1 &6354875274338379478

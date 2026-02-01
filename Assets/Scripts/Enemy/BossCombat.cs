@@ -7,13 +7,6 @@ public class BossCombat : EnemyCombat
     [SerializeField] private int timesToShootBullet;
     [SerializeField] private float wait;
 
-   
-
-    private void Start()
-    {
-        
-    }
-
     protected override void Shoot()
     {
         StartCoroutine(ShootWithDelay());
@@ -21,17 +14,13 @@ public class BossCombat : EnemyCombat
 
     private IEnumerator ShootWithDelay()
     {
+        if (bullet == null || bulletPos == null) yield break;
+
         for (int i = 0; i < timesToShootBullet; i++)
         {
-            Instantiate(bullet, playerTarget.position, Quaternion.identity);
+            Instantiate(bullet, bulletPos.position, Quaternion.identity);
             Debug.Log("Boss shoot");
             yield return new WaitForSeconds(wait);
         }
     }
-
-   
-
-
-
-    
 }
