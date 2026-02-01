@@ -6,6 +6,7 @@ public class GroundChaserEnemy : EnemyMovement2D
 {
     [Header("Ground Patrol Settings")]
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float frontOffset = 0.4f;       // how far ahead to check for ground/wall
     [SerializeField] private float groundCheckDistance = 0.8f;
     [SerializeField] private float wallCheckDistance = 0.35f;
@@ -36,9 +37,7 @@ public class GroundChaserEnemy : EnemyMovement2D
 
         if ((!hasGroundAhead || hasWallAhead) && Time.time - lastFlipTime >= flipCooldown)
         {
-            patrolDirection *= -1;
-            lastFlipTime = Time.time;
-            // flip and continue next frame (avoid hard-stop every frame)
+            FlipDirection();
             return;
         }
 
@@ -48,6 +47,24 @@ public class GroundChaserEnemy : EnemyMovement2D
 
         if (spriteRenderer != null)
             spriteRenderer.flipX = patrolDirection < 0;
+    }
+
+    private void FlipDirection()
+    {
+        patrolDirection *= -1;
+        lastFlipTime = Time.time;
+    }
+
+    // Flip only on solid enemy collision (ignore triggers)
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.isTrigger) return;
+
+        if (((1 << collision.gameObject.layer) & enemyLayer) != 0)
+        {
+            if (Time.time - lastFlipTime >= flipCooldown)
+                FlipDirection();
+        }
     }
 
     protected override void MoveChase(Vector2 toPlayer)
@@ -80,31 +97,23 @@ public class GroundChaserEnemy : EnemyMovement2D
         return Mathf.Abs(target.x - transform.position.x) <= reachThreshold;
     }
 
-    // Build checkpoint snapshot but filter out points that are unreachable (player is too high).
-    // Project each checkpoint vertically down to the ground (so the enemy can navigate to ground points).
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        // ensure we have playerMovement reference
-        if ( PlayerCheckPoint == null)
-        {
-            if (PlayerCheckPoint == null) return;
-        }
+        if (PlayerCheckPoint == null)
+            return;
 
-        // newest-first, filter unreachable and project to ground
         for (int i = PlayerCheckPoint.Count - 1; i >= 0; i--)
         {
             Vector3 cp = PlayerCheckPoint[i];
 
-            // vertical filter (enemy cannot jump) - allow small tolerance
             if (cp.y - transform.position.y > 0.6f) continue;
 
-            // project to ground to avoid "air" points
             Vector2 start = new Vector2(cp.x, cp.y + 0.1f);
             RaycastHit2D groundHit = Physics2D.Raycast(start, Vector2.down, 6f, groundLayer);
             if (groundHit.collider != null)
                 dest.Add(groundHit.point);
             else
-                dest.Add(new Vector2(cp.x, transform.position.y)); // fallback to same Y as enemy
+                dest.Add(new Vector2(cp.x, transform.position.y));
         }
     }
 }

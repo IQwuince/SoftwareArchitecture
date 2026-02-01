@@ -8,6 +8,7 @@ public class EnemyHealth : GenericHealth
 
     [Header("Enemy Prefab")]
     public GameObject enemyPrefab; // Assign this in the inspector or via spawner
+    public EnemyMovement2D enemyMovement;
 
     [SerializeField] private TextMeshPro healthTextEnemy;
     private EnemyLoot enemyLoot;
@@ -24,7 +25,9 @@ public class EnemyHealth : GenericHealth
     {
         base.TakeDamage(damage);
         UpdateHealthUI();
+        enemyMovement.KnockBackEnemy();
         DieEnemy();
+        
     }
 
     public override void Heal(int healAmount)

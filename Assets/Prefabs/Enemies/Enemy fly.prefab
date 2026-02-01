@@ -210,6 +210,88 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 4310686939788404255}
   m_maskType: 0
+--- !u!1 &2444583577925024793
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6167510768075454987}
+  - component: {fileID: 9217613131385749958}
+  - component: {fileID: 4634258897073060412}
+  m_Layer: 0
+  m_Name: Decetion player
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6167510768075454987
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2444583577925024793}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1405027016044464868}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &9217613131385749958
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2444583577925024793}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 5.4
+--- !u!114 &4634258897073060412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2444583577925024793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bfec5914a8f29348bab841dfc5884fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DetectPlayer
+  detectPlayerPosition: {fileID: 0}
 --- !u!1 &3267711389172939765
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,7 +518,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
   damageAmount: 0
   bullet: {fileID: 0}
-  bulletPos: {fileID: 0}
+  bulletPos: {fileID: 8402535119350472016}
   bulletDuration: 0
 --- !u!61 &6482430075036208400
 BoxCollider2D:
@@ -498,9 +580,9 @@ GameObject:
   - component: {fileID: 7309798448108484890}
   - component: {fileID: 7169677881445767319}
   - component: {fileID: 432335749143620030}
-  - component: {fileID: 1949082203209288240}
   - component: {fileID: 140842302687810289}
-  m_Layer: 0
+  - component: {fileID: 2526909690300917711}
+  m_Layer: 8
   m_Name: Enemy fly
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -525,6 +607,7 @@ Transform:
   - {fileID: 3379513102584149603}
   - {fileID: 381605878077597302}
   - {fileID: 8402535119350472016}
+  - {fileID: 6167510768075454987}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3432361150978285052
@@ -574,7 +657,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -6367560908665664636, guid: 40de9a8703e2e5a47882b0b86451c741, type: 3}
+  m_Sprite: {fileID: 4366178942990776957, guid: 603abb83490921841976d0f1b2045f23, type: 3}
   m_Color: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -628,6 +711,7 @@ MonoBehaviour:
   minHealth: 0
   currentHealth: 100
   enemyPrefab: {fileID: 6354875274338379478}
+  enemyMovement: {fileID: 140842302687810289}
   healthTextEnemy: {fileID: 3227766838503147310}
 --- !u!70 &7169677881445767319
 CapsuleCollider2D:
@@ -684,22 +768,6 @@ MonoBehaviour:
   minQuantity: 1
   maxQuantity: 1
   XPReward: 300
---- !u!114 &1949082203209288240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6354875274338379478}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4ec05dc7f52b984c9c38ab5d9151513, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  damageAmount: 0
-  bullet: {fileID: 6373973903570323999, guid: 8f46fdb92729a3d44b61167b35b2d362, type: 3}
-  bulletPos: {fileID: 8402535119350472016}
-  bulletDuration: 0
 --- !u!114 &140842302687810289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -713,7 +781,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlyingChaserEnemy
   enemyHealth: {fileID: 7309798448108484890}
-  stateText: {fileID: 0}
+  detectPlayer: {fileID: 4634258897073060412}
+  stateText: {fileID: 2430690539064793872}
   moveSpeed: 3
   detectionRange: 10
   obstacleLayer:
@@ -721,12 +790,51 @@ MonoBehaviour:
     m_Bits: 64
   eyeOffset: {x: 0, y: 0.25}
   raycastInterval: 0.12
+  verticalBounceBackForce: 5
+  horizontalBounceBackForce: 5
+  knockbackDuration: 0.25
   reachThreshold: 0.25
   searchTimeout: 8
   patrolRadius: 5
   verticalSpeedMultiplier: 1
   wallCheckDistance: 0.35
   patrolY: 0
+--- !u!58 &2526909690300917711
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6354875274338379478}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 3.78
 --- !u!1 &8746913294913566043
 GameObject:
   m_ObjectHideFlags: 0

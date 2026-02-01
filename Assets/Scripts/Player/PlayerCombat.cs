@@ -67,6 +67,7 @@ public class PlayerCombat : MonoBehaviour
         if (collider.CompareTag("Enemy") && collider.TryGetComponent<EnemyHealth>(out EnemyHealth eh))
         {
             IDamageable.Add(eh);
+            Debug.Log("Enemy Damage Taken");
         }
     }
 

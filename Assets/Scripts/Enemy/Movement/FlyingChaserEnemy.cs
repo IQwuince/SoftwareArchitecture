@@ -25,12 +25,15 @@ public class FlyingChaserEnemy : EnemyMovement2D
         float targetX = patrolCenter.x + patrolDirection * patrolRadius;
         float dx = targetX - transform.position.x;
 
-        // wall check ahead
-        Vector2 wallOrigin = (Vector2)transform.position;
-        RaycastHit2D wallHit = Physics2D.Raycast(wallOrigin, new Vector2(patrolDirection, 0f), wallCheckDistance, obstacleLayer);
+        // get collider bounds (so we cast from front edge)
+        Collider2D col = GetComponent<Collider2D>();
+        float halfWidth = col != null ? col.bounds.extents.x : 0.25f;
+
+        Vector2 wallOrigin = (Vector2)transform.position + new Vector2(patrolDirection * (halfWidth + 0.02f), 0f);
+        float castDistance = wallCheckDistance + 0.05f; // extend slightly beyond edge
+        RaycastHit2D wallHit = Physics2D.Raycast(wallOrigin, new Vector2(patrolDirection, 0f), castDistance, obstacleLayer);
         bool hasWallAhead = wallHit.collider != null;
 
-        // reverse on wall or if reached edge of radius (close enough)
         if (hasWallAhead || Mathf.Abs(dx) <= reachThreshold)
         {
             patrolDirection *= -1;
@@ -38,7 +41,6 @@ public class FlyingChaserEnemy : EnemyMovement2D
             return;
         }
 
-        // move toward target X while holding patrolCenter.y
         float dirX = Mathf.Sign(dx);
         float vy = (patrolCenter.y - transform.position.y) * verticalSpeedMultiplier;
         rb.linearVelocity = new Vector2(dirX * moveSpeed, vy);

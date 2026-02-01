@@ -2,17 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-[DisallowMultipleComponent]
 public abstract class EnemyMovement2D : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] protected EnemyHealth enemyHealth;
-     protected Transform playerPosition;
+    [SerializeField] protected DetectPlayer detectPlayer;
+    //protected Transform playerPosition;
     [SerializeField] TextMeshPro stateText;
 
     //protected PlayerMovement playerMovement;
     protected Rigidbody2D rb;
-    protected CircleCollider2D playerDetectionCollider;
     protected SpriteRenderer spriteRenderer;
 
     [Header("General Settings")]
@@ -21,6 +20,13 @@ public abstract class EnemyMovement2D : MonoBehaviour
     [SerializeField] protected LayerMask obstacleLayer;  // blockers only (no player)
     [SerializeField] protected Vector2 eyeOffset = new Vector2(0f, 0.25f);
     [SerializeField] protected float raycastInterval = 0.12f;
+
+    [Header("Bounce back")]
+    public float verticalBounceBackForce = 5f;
+    public float horizontalBounceBackForce = 5f;
+    private bool isKnockedBack = false;
+    private float knockbackTimer = 0f;
+    public float knockbackDuration = 0.25f;
 
     [Header("Search Settings")]
     [SerializeField] protected float reachThreshold = 0.25f;
@@ -40,7 +46,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     //Player trail
     protected List<Vector2> PlayerCheckPoint = new();
-   
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -55,14 +61,16 @@ public abstract class EnemyMovement2D : MonoBehaviour
     private void OnEnable()
     {
         EventBus.Subscribe<EnemyPlayerTrailCheckPointEvent>(OnPlayerConnected);
+        EventBus.Subscribe<EnemyDamagedEvent>(EnemyDamaged);
     }
 
     private void OnDisable()
     {
         EventBus.UnSubscribe<EnemyPlayerTrailCheckPointEvent>(OnPlayerConnected);
+        EventBus.UnSubscribe<EnemyDamagedEvent>(EnemyDamaged);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+   /* private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
@@ -76,12 +84,11 @@ public abstract class EnemyMovement2D : MonoBehaviour
         {
             EventBus.Publish(new EnemyInPlayerReachEvent(false));
         }
-    }
+    }*/
 
     protected virtual void Update()
     {
-
-        if (playerPosition == null || enemyHealth == null || enemyHealth.currentHealth <= 0) return;
+        if (detectPlayer.detectPlayerPosition == null || enemyHealth == null || enemyHealth.currentHealth <= 0) return;
 
         if (Time.time - lastRaycastTime >= raycastInterval)
         {
@@ -90,6 +97,8 @@ public abstract class EnemyMovement2D : MonoBehaviour
         }
 
         UpdateUIState();
+
+        // NOTE: knockback timer is handled in FixedUpdate to align with physics updates
     }
 
     protected virtual void FixedUpdate()
@@ -98,6 +107,23 @@ public abstract class EnemyMovement2D : MonoBehaviour
         {
             StopHorizontal();
             return;
+        }
+
+        // Handle knockback in FixedUpdate so physics isn't immediately overwritten by AI movement
+        if (isKnockedBack)
+        {
+            knockbackTimer -= Time.fixedDeltaTime;
+            if (knockbackTimer <= 0f)
+            {
+                isKnockedBack = false;
+                // Optionally clear horizontal velocity when knockback ends, or let AI resume naturally
+                // rb.velocity = new Vector2(0f, rb.velocity.y);
+            }
+            else
+            {
+                // Still in knockback; skip AI-driven movement so velocity isn't clobbered.
+                return;
+            }
         }
 
         switch (currentState)
@@ -125,8 +151,6 @@ public abstract class EnemyMovement2D : MonoBehaviour
             stateText.text = "State: " + currentState.ToString();
         }
     }
-
-    
 
     // State machine helpers
     protected void EnterState(EnemyState newState)
@@ -159,12 +183,12 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     protected virtual void Chase()
     {
-        if (playerPosition == null) return;
-        Vector2 toPlayer = (Vector2)playerPosition.position - (Vector2)transform.position;
+        if (detectPlayer.detectPlayerPosition == null) return;
+        Vector2 toPlayer = (Vector2)detectPlayer.detectPlayerPosition.position - (Vector2)transform.position;
         MoveChase(toPlayer);
 
         // if actively chasing, update last seen pos
-        lastSeenPlayerPos = playerPosition.position;
+        lastSeenPlayerPos = detectPlayer.detectPlayerPosition.position;
     }
 
     protected virtual void Search()
@@ -207,20 +231,20 @@ public abstract class EnemyMovement2D : MonoBehaviour
     // LOS
     protected void HandleLineOfSight()
     {
-        if (playerPosition == null) return;
+        if (detectPlayer.detectPlayerPosition == null) return;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, playerPosition.position);
+        float distanceToPlayer = Vector2.Distance(transform.position, detectPlayer.detectPlayerPosition.position);
         if (distanceToPlayer > detectionRange) return;
 
         Vector2 origin = GetEyeOrigin();
-        Vector2 dir = ((Vector2)playerPosition.position - origin).normalized;
+        Vector2 dir = ((Vector2)detectPlayer.detectPlayerPosition.position - origin).normalized;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, dir, distanceToPlayer, obstacleLayer);
         bool blocked = hit.collider != null;
 
         if (!blocked)
         {
-            lastSeenPlayerPos = playerPosition.position;
+            lastSeenPlayerPos = detectPlayer.detectPlayerPosition.position;
             EnterState(EnemyState.Chase);
         }
         else
@@ -272,10 +296,10 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (playerPosition == null) return;
+        if (detectPlayer.detectPlayerPosition == null) return;
 
         Vector3 enemyPos = transform.position;
-        Vector3 playerPos = playerPosition.position;
+        Vector3 playerPos = detectPlayer.detectPlayerPosition.position;
         float distance = Vector3.Distance(enemyPos, playerPos);
         Vector3 direction = (playerPos - enemyPos).normalized;
         Vector3 rangeEnd = enemyPos + direction * detectionRange;
@@ -308,5 +332,30 @@ public abstract class EnemyMovement2D : MonoBehaviour
     private void OnPlayerConnected(EnemyPlayerTrailCheckPointEvent enemyPlayerTrailCheckPointEvent)
     {
         PlayerCheckPoint = enemyPlayerTrailCheckPointEvent.CheckpointTrailT;
+    }
+
+    public void KnockBackEnemy()
+    {
+        Vector2 direction = Vector2.up; // Default: just up
+
+        if (detectPlayer.detectPlayerPosition != null)
+        {
+            // Knock away from the player horizontally, always up vertically
+            float xDir = (transform.position.x - detectPlayer.detectPlayerPosition.position.x) >= 0 ? 1f : -1f;
+            // apply horizontal and vertical separately (no normalization) so both forces are effective
+            direction = new Vector2(xDir, 1f);
+        }
+
+        // Apply immediate physics via velocity so movement doesn't fight against it
+        Vector2 knockVelocity = new Vector2(direction.x * horizontalBounceBackForce, direction.y * verticalBounceBackForce);
+        rb.linearVelocity = knockVelocity;
+
+        isKnockedBack = true;
+        knockbackTimer = knockbackDuration;
+    }
+
+    void EnemyDamaged(EnemyDamagedEvent enemyDamagedEvent)
+    {
+        //KnockBackEnemy(); // currently commented out; EnemyHealth triggers KnockBackEnemy directly
     }
 }
