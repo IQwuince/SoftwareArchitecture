@@ -321,9 +321,11 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
         Vector2 knockVelocity = new Vector2(direction.x * horizontalBounceBackForce, direction.y * verticalBounceBackForce);
         rb.linearVelocity = knockVelocity;
+        
 
         isKnockedBack = true;
         knockbackTimer = knockbackDuration;
+        Debug.Log("enemy is knocked back");
     }
 
     void EnemyDamaged(EnemyDamagedEvent enemyDamagedEvent)

@@ -26,6 +26,7 @@ public class EnemyBullletScript : MonoBehaviour
         if (collision.CompareTag("Ground"))
             Destroy(gameObject);
 
+
         if (collision.CompareTag("Player"))
         {
             EventBus.Publish(new PlayerDamagedEvent(bulletDamage));

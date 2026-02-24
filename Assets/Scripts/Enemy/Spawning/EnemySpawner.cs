@@ -11,8 +11,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] SpawnPointData[] spawnPoints;
 
     [Header("Spawner Settings")]
-    [SerializeField] float spawnInterval = 5f;
-    [SerializeField] int maxActiveEnemies = 12; // global cap for this spawner
+    [SerializeField] float spawnInterval;
+    [SerializeField] int maxActiveEnemies; 
 
     readonly List<GameObject> activeEnemies = new List<GameObject>();
     readonly Dictionary<GameObject, int> originIndex = new Dictionary<GameObject, int>();

@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Gather a specified number of items
   questType: 1
   target: {fileID: 4803682483504667911, guid: a1769c9a48e87554da38253e823a4a72, type: 3}
-  targetCount: 5
+  targetCount: 2
   reward:
     xp: 200
     itemId: 0

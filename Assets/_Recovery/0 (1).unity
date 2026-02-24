@@ -3313,6 +3313,7 @@ MonoBehaviour:
   bullet: {fileID: 6373973903570323999, guid: 8f46fdb92729a3d44b61167b35b2d362, type: 3}
   bulletPos: {fileID: 406129400}
   bulletDuration: 0
+  fireInterval: 0
 --- !u!212 &406129399
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5682,6 +5683,7 @@ MonoBehaviour:
   bullet: {fileID: 6373973903570323999, guid: 8f46fdb92729a3d44b61167b35b2d362, type: 3}
   bulletPos: {fileID: 1408757797}
   bulletDuration: 2
+  fireInterval: 0
 --- !u!4 &884931604 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 381605878077597302, guid: e04a487fc54a2df4c85eba8e8570dd0d, type: 3}
@@ -7072,7 +7074,6 @@ MonoBehaviour:
     weight: 0
     lastUsedTime: 0
   spawnInterval: 5
-  spawnAttempts: 6
   maxActiveEnemies: 12
 --- !u!4 &1318197665
 Transform:
@@ -10514,7 +10515,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6354875274338379478, guid: e04a487fc54a2df4c85eba8e8570dd0d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7309798448108484890, guid: e04a487fc54a2df4c85eba8e8570dd0d, type: 3}
       propertyPath: maxHealth
@@ -10531,9 +10532,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1482355056}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 391192159374945001, guid: e04a487fc54a2df4c85eba8e8570dd0d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 4372716284132994014, guid: e04a487fc54a2df4c85eba8e8570dd0d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 884931603}

@@ -8,7 +8,7 @@ public class EnemyHealth : GenericHealth
 
     [Header("Enemy Prefab")]
     public GameObject enemyPrefab;
-    public EnemyMovement2D enemyMovement;
+    private EnemyMovement2D enemyMovement;
 
     [SerializeField] private TextMeshPro healthTextEnemy;
     private EnemyLoot enemyLoot;
@@ -17,6 +17,7 @@ public class EnemyHealth : GenericHealth
     {
         if (healthTextEnemy != null) healthTextEnemy = GetComponentInChildren<TextMeshPro>();
         enemyLoot = UnityEngine.Object.FindFirstObjectByType<EnemyLoot>();
+        enemyMovement = GetComponentInParent<EnemyMovement2D>();
         UpdateHealthUI();
         
     }

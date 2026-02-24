@@ -803,7 +803,6 @@ MonoBehaviour:
   minHealth: 0
   currentHealth: 100
   enemyPrefab: {fileID: 6354875274338379478}
-  enemyMovement: {fileID: 3420309728323989914}
   healthTextEnemy: {fileID: 3227766838503147310}
 --- !u!1 &8746913294913566043
 GameObject:
