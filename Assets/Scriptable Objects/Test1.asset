@@ -16,6 +16,6 @@ MonoBehaviour:
   itemName: Test 1
   attack: 0
   defense: 0
-  itemDescription: 'object 1 '
+  itemDescription: Ojbect test 1
   itemIcon: {fileID: 3211865404380153573, guid: 1ddc9afd21fec77489b1248d18f31b68, type: 3}
   itemModel: {fileID: 0}
