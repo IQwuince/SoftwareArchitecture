@@ -19,7 +19,7 @@ public class BossCombat : EnemyCombat
         for (int i = 0; i < timesToShootBullet; i++)
         {
             Instantiate(bullet, bulletPos.position, Quaternion.identity);
-            Debug.Log("Boss shoot");
+            //Debug.Log("Boss shoot");
             yield return new WaitForSeconds(wait);
         }
     }

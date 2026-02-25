@@ -8,7 +8,7 @@ public class DetectPlayer : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            Debug.Log("player detected");
+            //Debug.Log("player detected");
             detectPlayerPosition = collision.transform;
             EventBus.Publish(new EnemyInPlayerReachEvent(true));
         }

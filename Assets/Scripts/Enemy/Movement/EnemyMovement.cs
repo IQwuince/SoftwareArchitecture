@@ -325,7 +325,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
         isKnockedBack = true;
         knockbackTimer = knockbackDuration;
-        Debug.Log("enemy is knocked back");
+        //Debug.Log("enemy is knocked back");
     }
 
     void EnemyDamaged(EnemyDamagedEvent enemyDamagedEvent)

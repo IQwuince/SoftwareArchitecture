@@ -33,7 +33,7 @@ public class PlayerHealth : GenericHealth
 
     public override void TakeDamage(int damage)
     {
-        Debug.Log("damage taken");
+        //Debug.Log("damage taken");
         base.TakeDamage(damage);
         PlayerHealthUI();
         playerMovement.OnPlayerDamagedMovement();
@@ -49,7 +49,7 @@ public class PlayerHealth : GenericHealth
     {
         if (currentHealth <= minHealth)
         {
-            Debug.Log("Dead");
+            //Debug.Log("Dead");
             GameManager.Instance.DiePlayer();
             PlayerHealthUI();
         }

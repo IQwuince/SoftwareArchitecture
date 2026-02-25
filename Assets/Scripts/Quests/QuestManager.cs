@@ -106,7 +106,8 @@ namespace IQwuince.Quests
 
         private void HandleEnemyKilled(GameObject enemyPrefab)
         {
-            if (enemyPrefab == null) return;
+           
+            if (enemyPrefab == null)  return;
 
             // Track kill count
             if (!enemyKillCounts.ContainsKey(enemyPrefab))
@@ -116,6 +117,7 @@ namespace IQwuince.Quests
             // Check if any Kill quest matches this enemy
             if (activeQuests.TryGetValue(QuestType.Kill, out Quest killQuest))
             {
+               
                 if (killQuest.questData.target == enemyPrefab)
                 {
                     killQuest.IncrementProgress();
