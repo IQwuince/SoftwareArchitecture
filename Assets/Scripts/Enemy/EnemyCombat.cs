@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class EnemyCombat : MonoBehaviour
 {
@@ -18,7 +19,8 @@ public class EnemyCombat : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            EventBus.Publish(new PlayerDamagedEvent(damageAmount));
+            //EventBus.Publish(new PlayerDamagedEvent(damageAmount));
+            
         }
     }
     private void OnEnable()
