@@ -20,24 +20,5 @@ public class EventBus<T> where T : Event
 /// </summary>
 public abstract class Event { }
 
-/// <summary>
-/// An event to notify all subscribers that care about money
-/// </summary>
-public class GetMoneyEvent : Event
-{
-    public readonly int money;
-    //It's rare to see a constructor!
-    public GetMoneyEvent(int pMoney)
-    {
-        money = pMoney;
-    }
-}
 
-/// <summary>
-/// An event to notify all subscibers that wants to know whenver a zombie is killed
-/// </summary>
-public class ZombieKilledEvent : Event
-{
-
-}
 

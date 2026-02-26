@@ -44,7 +44,6 @@ public class EnemyHealth : GenericHealth
             Debug.Log($"[EnemyHealth] OnEnemyKilledEvent: enemyPrefab={(enemyPrefab ? enemyPrefab.name : "NULL")} instance={gameObject.name}");
             OnEnemyKilledEvent?.Invoke(enemyPrefab);
             if (enemyLoot != null) enemyLoot.GiveRewards();
-            //OnEnemyKilledEvent?.Invoke(enemyPrefab);
             GameObject.Destroy(this.gameObject);
         }
     }

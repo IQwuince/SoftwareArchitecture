@@ -30,7 +30,7 @@ namespace IQwuince.Quests
             // XP (matches how EnemyLoot does it)
             if (reward.xp > 0)
             {
-                EventBus.Publish(new LevelSystemAddXpEvent(reward.xp));
+                EventBus<LevelSystemAddXpEvent>.Publish(new LevelSystemAddXpEvent(reward.xp));
                 Debug.Log($"[QuestRewardApplier] Awarded XP: {reward.xp}");
             }
 

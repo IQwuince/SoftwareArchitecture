@@ -77,7 +77,7 @@ public class BossAOE : MonoBehaviour
         while (playerInTrigger && isAoeAttacking)
         {
             //Debug.Log("AOE Damage");
-            EventBus.Publish(new PlayerDamagedEvent(aoeDamage));
+            EventBus<PlayerDamagedEvent>.Publish(new PlayerDamagedEvent(aoeDamage));
             yield return new WaitForSeconds(attackInverval);
         }
         damageCoroutine = null;

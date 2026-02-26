@@ -10,14 +10,14 @@ public class DetectPlayer : MonoBehaviour
         {
             //Debug.Log("player detected");
             detectPlayerPosition = collision.transform;
-            EventBus.Publish(new EnemyInPlayerReachEvent(true));
+            EventBus<EnemyInPlayerReachEvent>.Publish(new EnemyInPlayerReachEvent(true));
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            EventBus.Publish(new EnemyInPlayerReachEvent(false));
+            EventBus<EnemyInPlayerReachEvent>.Publish(new EnemyInPlayerReachEvent(false));
         }
     }
 }

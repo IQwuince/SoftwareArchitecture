@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class LevelSystemAddXpEvent : IGameEvent
+public class LevelSystemAddXpEvent : Event
 {
 	public LevelSystem levelSystem { get; }
 	public int XpAdd;

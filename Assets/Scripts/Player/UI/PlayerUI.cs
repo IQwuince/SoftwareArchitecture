@@ -13,12 +13,12 @@ public class PlayerUI : MonoBehaviour
 
     private void OnEnable()
     {
-        EventBus.Subscribe<PlayerUIValueChangeEvent>(PlayerHealhValueChange);
+        EventBus<PlayerUIValueChangeEvent>.OnEvent += (PlayerHealhValueChange);
         
     }
     private void OnDisable()
     {
-        EventBus.UnSubscribe<PlayerUIValueChangeEvent>(PlayerHealhValueChange);
+        EventBus<PlayerUIValueChangeEvent>.OnEvent -= (PlayerHealhValueChange);
     }
 
 

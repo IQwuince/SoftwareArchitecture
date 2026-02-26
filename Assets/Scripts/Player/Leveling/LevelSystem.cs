@@ -29,11 +29,11 @@ public class LevelSystem : MonoBehaviour
     }
     private void OnEnable()
     {
-        EventBus.Subscribe<LevelSystemAddXpEvent>(AddXpEvent);
+        EventBus<LevelSystemAddXpEvent>.OnEvent +=(AddXpEvent);
     }
     private void OnDisable()
     {
-        EventBus.UnSubscribe<LevelSystemAddXpEvent>(AddXpEvent);
+        EventBus<LevelSystemAddXpEvent>.OnEvent -= (AddXpEvent);
     }
 
     private void Update()

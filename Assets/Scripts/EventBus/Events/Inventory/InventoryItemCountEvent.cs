@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class InventoryItemCountEvent : IGameEvent
+public class InventoryItemCountEvent : Event
 {
     public Inventory Inventory { get; }
     public int itemCountT;

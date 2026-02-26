@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyBullletScript : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class EnemyBullletScript : MonoBehaviour
 
         if (collision.CompareTag("Player"))
         {
-            EventBus.Publish(new PlayerDamagedEvent(bulletDamage));
+            EventBus<PlayerDamagedEvent>.Publish(new PlayerDamagedEvent(bulletDamage));
             Destroy(gameObject);
         }
     }

@@ -11,13 +11,13 @@ public class PlayerHealth : GenericHealth
     }
     void OnEnable()
     {
-        EventBus.Subscribe<PlayerHealthUpgradeEvent>(PlayerValueUpgrade);
-        EventBus.Subscribe<PlayerDamagedEvent>(OnPlayerDamaged);
+        EventBus<PlayerHealthUpgradeEvent>.OnEvent += PlayerValueUpgrade;
+        EventBus<PlayerDamagedEvent>.OnEvent += OnPlayerDamaged;
     }
     void OnDisable()
     {
-        EventBus.UnSubscribe<PlayerHealthUpgradeEvent>(PlayerValueUpgrade);
-        EventBus.UnSubscribe<PlayerDamagedEvent>(OnPlayerDamaged);
+        EventBus<PlayerHealthUpgradeEvent>.OnEvent -= PlayerValueUpgrade;
+        EventBus<PlayerDamagedEvent>.OnEvent -= OnPlayerDamaged;
     }
 
     void PlayerValueUpgrade(PlayerHealthUpgradeEvent playerHealthUpgradeEvent)
@@ -58,7 +58,7 @@ public class PlayerHealth : GenericHealth
     
     public void PlayerHealthUI()
     {
-        EventBus.Publish(new PlayerUIValueChangeEvent(currentHealth, minHealth, maxHealth));
+        EventBus<PlayerUIValueChangeEvent>.Publish(new PlayerUIValueChangeEvent(currentHealth, minHealth, maxHealth));
     }
 
     

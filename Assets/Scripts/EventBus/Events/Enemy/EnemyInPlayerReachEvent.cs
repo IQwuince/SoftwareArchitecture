@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class EnemyInPlayerReachEvent : IGameEvent
+public class EnemyInPlayerReachEvent : Event
 {
     public EnemyMovement2D enemyMovement2D;
     public bool isPlayerInReach;

@@ -19,17 +19,17 @@ public class EnemyCombat : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //EventBus.Publish(new PlayerDamagedEvent(damageAmount));
+            EventBus<PlayerDamagedEvent>.Publish(new PlayerDamagedEvent(damageAmount));
             
         }
     }
     private void OnEnable()
     {
-        EventBus.Subscribe<EnemyInPlayerReachEvent>(isPlayerInReach);
+        EventBus<EnemyInPlayerReachEvent>.OnEvent += isPlayerInReach;
     }
     private void OnDisable()
     {
-        EventBus.UnSubscribe<EnemyInPlayerReachEvent>(isPlayerInReach);
+        EventBus<EnemyInPlayerReachEvent>.OnEvent -= isPlayerInReach;
     }
     void isPlayerInReach(EnemyInPlayerReachEvent EnemyInPlayerReachEvent)
     {

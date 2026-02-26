@@ -31,11 +31,11 @@ public class PlayerCombat : MonoBehaviour
     }
     private void OnEnable()
     {
-        EventBus.Subscribe<PlayerDamageUpgradeEvent>(IncreaseDamage);
+        EventBus<PlayerDamageUpgradeEvent>.OnEvent +=(IncreaseDamage);
     }
     void OnDisable()
     {
-        EventBus.UnSubscribe<PlayerDamageUpgradeEvent>(IncreaseDamage);
+        EventBus<PlayerDamageUpgradeEvent>.OnEvent -= (IncreaseDamage);
     }
 
     private void Update()
