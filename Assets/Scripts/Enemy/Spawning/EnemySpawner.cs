@@ -112,6 +112,8 @@ public class EnemySpawner : MonoBehaviour
         if (Physics2D.OverlapCircle(pos, chosen.spawnRadius, chosen.obstacleMask)) return;
 
         var go = Instantiate(enemyPrefab, pos, chosen.transform.rotation);
+        var health = go.GetComponentInChildren<EnemyHealth>(); // or GetComponent<EnemyHealth>() depending on your hierarchy
+        if (health != null) health.enemyPrefab = enemyPrefab; // assign prefab ASSET, not spawned instance
         activeEnemies.Add(go);
         originIndex[go] = chosenIndex;
 

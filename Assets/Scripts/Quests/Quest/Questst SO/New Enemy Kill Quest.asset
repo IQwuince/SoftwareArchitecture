@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c92a34bbb1d3494ba26eef7b5e27647, type: 3}
   m_Name: New Enemy Kill Quest
   m_EditorClassIdentifier: Assembly-CSharp::EnemyKillQuest
-  questName: 
+  questName: kill enemies
   description: 
-  isCompleted: 0
-  enemyType: 
+  isCompleted: 1
+  enemyPrefab: {fileID: 6354875274338379478, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}
   requiredKills: 0

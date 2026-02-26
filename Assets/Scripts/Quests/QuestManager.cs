@@ -106,7 +106,8 @@ namespace IQwuince.Quests
 
         private void HandleEnemyKilled(GameObject enemyPrefab)
         {
-           
+            Debug.Log($"[QuestManager] HandleEnemyKilled got: {(enemyPrefab ? enemyPrefab.name : "NULL")}");
+
             if (enemyPrefab == null)  return;
 
             // Track kill count
@@ -117,7 +118,9 @@ namespace IQwuince.Quests
             // Check if any Kill quest matches this enemy
             if (activeQuests.TryGetValue(QuestType.Kill, out Quest killQuest))
             {
-               
+                Debug.Log($"[QuestManager] Active kill quest target: {(killQuest.questData.target ? killQuest.questData.target.name : "NULL")}");
+                Debug.Log($"[QuestManager] Prefab match? {(killQuest.questData.target == enemyPrefab)}");
+
                 if (killQuest.questData.target == enemyPrefab)
                 {
                     killQuest.IncrementProgress();
