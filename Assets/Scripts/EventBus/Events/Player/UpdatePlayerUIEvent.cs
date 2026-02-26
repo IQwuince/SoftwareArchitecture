@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Assets.Scripts.EventBus.Events
 {
-	public class UpdatePlayerUIEvent : IGameEvent
+	public class UpdatePlayerUIEvent : Event
 	{
         public PlayerLevel playerLevel { get; }
         public GameManager gameManager { get; }

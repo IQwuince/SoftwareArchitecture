@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-public class EnemyDamagedEvent : IGameEvent
+public class EnemyDamagedEvent : Event
 {
 	public EnemyHealth EnemyHealthE { get; }
 	public PlayerCombat playerCombatE { get; }

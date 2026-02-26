@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerDamagedEvent : IGameEvent
+public class PlayerDamagedEvent : Event
 {
     public PlayerHealth PlayerHealth { get; }
     public int damageTaken;

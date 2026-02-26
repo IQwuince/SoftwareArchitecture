@@ -1,4 +1,3 @@
-using Assets.Scripts.EventBus.Events;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -32,6 +31,6 @@ public class GameManager : MonoBehaviour
         Player.transform.position = SavePosition;
         PlayerRB2D.linearVelocity = Vector3.zero;
         PlayerHealth.ResetHealth();
-        EventBus.Publish(new UpdatePlayerUIEvent(this));
+        EventBus<UpdatePlayerUIEvent>.Publish(new UpdatePlayerUIEvent(this));
     }
 }

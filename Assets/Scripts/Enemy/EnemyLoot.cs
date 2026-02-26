@@ -51,7 +51,7 @@ public class EnemyLoot : MonoBehaviour
 
     private void GiveXP()
     {
-        EventBus.Publish(new LevelSystemAddXpEvent(XPReward));
+        EventBus<LevelSystemAddXpEvent>.Publish(new LevelSystemAddXpEvent(XPReward));
     }
 
     public void GiveRewards()

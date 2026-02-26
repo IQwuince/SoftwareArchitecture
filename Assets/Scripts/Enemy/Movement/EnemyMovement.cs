@@ -60,14 +60,14 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     private void OnEnable()
     {
-        EventBus.Subscribe<EnemyPlayerTrailCheckPointEvent>(OnPlayerConnected);
-        EventBus.Subscribe<EnemyDamagedEvent>(EnemyDamaged);
+        EventBus<EnemyPlayerTrailCheckPointEvent>.OnEvent += OnPlayerConnected;
+        EventBus<EnemyDamagedEvent>.OnEvent += EnemyDamaged;
     }
 
     private void OnDisable()
     {
-        EventBus.UnSubscribe<EnemyPlayerTrailCheckPointEvent>(OnPlayerConnected);
-        EventBus.UnSubscribe<EnemyDamagedEvent>(EnemyDamaged);
+        EventBus<EnemyPlayerTrailCheckPointEvent>.OnEvent -= OnPlayerConnected;
+        EventBus<EnemyDamagedEvent>.OnEvent -= EnemyDamaged;
     }
 
     protected virtual void Update()

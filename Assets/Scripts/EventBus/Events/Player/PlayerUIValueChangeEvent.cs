@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerUIValueChangeEvent : IGameEvent
+public class PlayerUIValueChangeEvent : Event
 {
 	public PlayerHealth PlayerHealth { get; }
     public int currentHealthE;

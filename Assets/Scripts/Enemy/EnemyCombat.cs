@@ -25,11 +25,11 @@ public class EnemyCombat : MonoBehaviour
     }
     private void OnEnable()
     {
-        EventBus.Subscribe<EnemyInPlayerReachEvent>(isPlayerInReach);
+        EventBus<EnemyInPlayerReachEvent>.OnEvent += isPlayerInReach;
     }
     private void OnDisable()
     {
-        EventBus.UnSubscribe<EnemyInPlayerReachEvent>(isPlayerInReach);
+        EventBus<EnemyInPlayerReachEvent>.OnEvent -= isPlayerInReach;
     }
     void isPlayerInReach(EnemyInPlayerReachEvent EnemyInPlayerReachEvent)
     {

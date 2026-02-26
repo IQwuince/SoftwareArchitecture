@@ -32,14 +32,14 @@ namespace IQwuince.Quests
         private void OnEnable()
         {
             // Subscribe to game events
-            EnemyHealth.OnEnemyKilledEvent += HandleEnemyKilled;
+            EventBus<EnemyKilledEvent>.OnEvent += HandleEnemyKilled;
             Inventory.OnItemPickedUp += HandleItemPickedUp;
         }
 
         private void OnDisable()
         {
             // Unsubscribe from game events
-            EnemyHealth.OnEnemyKilledEvent -= HandleEnemyKilled;
+            EventBus<EnemyKilledEvent>.OnEvent -= HandleEnemyKilled;
             Inventory.OnItemPickedUp -= HandleItemPickedUp;
         }
 
@@ -104,8 +104,9 @@ namespace IQwuince.Quests
             return activeQuests.Values;
         }
 
-        private void HandleEnemyKilled(GameObject enemyPrefab)
+        private void HandleEnemyKilled(EnemyKilledEvent e)
         {
+            GameObject enemyPrefab = e.enemyPrefab;
             Debug.Log($"[QuestManager] HandleEnemyKilled got: {(enemyPrefab ? enemyPrefab.name : "NULL")}");
 
             if (enemyPrefab == null)  return;
@@ -182,7 +183,7 @@ namespace IQwuince.Quests
         }
         public void UpdateKillProgress(GameObject enemyPrefab)
         {
-            HandleEnemyKilled(enemyPrefab);
+            HandleEnemyKilled(new EnemyKilledEvent(enemyPrefab));
         }
 
         private void HandleQuestProgressChanged(Quest quest)

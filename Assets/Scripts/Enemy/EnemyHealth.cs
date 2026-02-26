@@ -1,11 +1,8 @@
 using TMPro;
 using UnityEngine;
-using System;
 
 public class EnemyHealth : GenericHealth
 {
-    public static event Action<GameObject> OnEnemyKilledEvent;
-
     [Header("Enemy Prefab")]
     public GameObject enemyPrefab;
     private EnemyMovement2D enemyMovement;
@@ -41,10 +38,9 @@ public class EnemyHealth : GenericHealth
     {
         if (currentHealth <= minHealth)
         {
-            Debug.Log($"[EnemyHealth] OnEnemyKilledEvent: enemyPrefab={(enemyPrefab ? enemyPrefab.name : "NULL")} instance={gameObject.name}");
-            OnEnemyKilledEvent?.Invoke(enemyPrefab);
+            Debug.Log($"[EnemyHealth] EnemyKilledEvent: enemyPrefab={(enemyPrefab ? enemyPrefab.name : "NULL")} instance={gameObject.name}");
+            EventBus<EnemyKilledEvent>.Publish(new EnemyKilledEvent(enemyPrefab));
             if (enemyLoot != null) enemyLoot.GiveRewards();
-            //OnEnemyKilledEvent?.Invoke(enemyPrefab);
             GameObject.Destroy(this.gameObject);
         }
     }
