@@ -519,6 +519,7 @@ MonoBehaviour:
   damageAmount: 10
   bullet: {fileID: 6373973903570323999, guid: 8f46fdb92729a3d44b61167b35b2d362, type: 3}
   bulletPos: {fileID: 8402535119350472016}
+  willShoot: 1
   bulletDuration: 2
   fireInterval: 5
 --- !u!61 &6482430075036208400

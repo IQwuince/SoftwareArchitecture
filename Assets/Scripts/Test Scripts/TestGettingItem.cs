@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class TestGettingItem : MonoBehaviour
 {
-    public InventoryUI inventoryUI;
     private void OnTriggerEnter2D(Collider2D trigger)
     {
         

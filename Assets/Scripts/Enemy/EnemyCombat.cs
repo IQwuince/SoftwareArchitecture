@@ -10,6 +10,7 @@ public class EnemyCombat : MonoBehaviour
     public GameObject bullet;
     public Transform bulletPos;
     private bool playerInReach;
+    public bool willShoot = false;
 
     private float reloadTimer;
     [SerializeField] protected float bulletDuration;
@@ -37,16 +38,20 @@ public class EnemyCombat : MonoBehaviour
     }
     private void Update()
     {
+        if (willShoot == true)
+        {
+            if (bullet == null || bulletPos == null) return;
 
-        if ( bullet == null || bulletPos == null) return;
+            reloadTimer += Time.deltaTime;
 
-        reloadTimer += Time.deltaTime;
-
-        if (reloadTimer > fireInterval && playerInReach == true)
-        {   
-            reloadTimer = 0;
-            Shoot();
+            if (reloadTimer > fireInterval && playerInReach == true)
+            {
+                reloadTimer = 0;
+                Shoot();
+            }
         }
+
+       
     }
 
     protected virtual void Shoot()

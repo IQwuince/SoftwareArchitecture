@@ -2615,14 +2615,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8358064692287050996, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}
+      propertyPath: willShoot
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 391192159374945001, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3267711389172939765, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}

@@ -17,9 +17,9 @@ MonoBehaviour:
   description: Defeat a specified number of enemies
   questType: 0
   target: {fileID: 6354875274338379478, guid: 0b1eb8a0471ce4643a7d1ed970993073, type: 3}
-  targetCount: 1
+  targetCount: 10
   reward:
-    xp: 200
+    xp: 1000
     itemId: 0
     currency: 0
   icon: {fileID: 3211865404380153573, guid: 1ddc9afd21fec77489b1248d18f31b68, type: 3}
