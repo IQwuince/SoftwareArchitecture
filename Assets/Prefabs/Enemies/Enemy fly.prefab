@@ -309,7 +309,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3379513102584149603
 RectTransform:
   m_ObjectHideFlags: 0
@@ -520,6 +520,7 @@ MonoBehaviour:
   bullet: {fileID: 0}
   bulletPos: {fileID: 8402535119350472016}
   bulletDuration: 0
+  fireInterval: 0
 --- !u!61 &6482430075036208400
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -711,7 +712,6 @@ MonoBehaviour:
   minHealth: 0
   currentHealth: 100
   enemyPrefab: {fileID: 6354875274338379478}
-  enemyMovement: {fileID: 140842302687810289}
   healthTextEnemy: {fileID: 3227766838503147310}
 --- !u!70 &7169677881445767319
 CapsuleCollider2D:

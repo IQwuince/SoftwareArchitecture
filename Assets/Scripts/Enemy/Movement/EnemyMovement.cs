@@ -1,24 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
+using Assets.Scripts.Enemy.Movement;
 
 public abstract class EnemyMovement2D : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] protected EnemyHealth enemyHealth;
     [SerializeField] protected DetectPlayer detectPlayer;
-    protected Transform playerPosition;
-    [SerializeField] TextMeshPro stateText;
+    [SerializeField] private TextMeshPro stateText;
 
-    //protected PlayerMovement playerMovement;
     protected Rigidbody2D rb;
     protected SpriteRenderer spriteRenderer;
 
     [Header("General Settings")]
     [SerializeField] protected float moveSpeed = 3f;
     [SerializeField] protected float detectionRange = 10f;
-    [SerializeField] protected LayerMask obstacleLayer;  // blockers only (no player)
-    [SerializeField] protected Vector2 eyeOffset = new Vector2(0f, 0.25f);
+    [SerializeField] protected LayerMask obstacleLayer;
+    [SerializeField] protected Vector2 eyeOffset = new(0f, 0.25f);
     [SerializeField] protected float raycastInterval = 0.12f;
 
     [Header("Bounce back")]
@@ -32,20 +32,20 @@ public abstract class EnemyMovement2D : MonoBehaviour
     [SerializeField] protected float reachThreshold = 0.25f;
     [SerializeField] protected float searchTimeout = 8f;
 
-    protected enum EnemyState { Idle, Patrol, Chase, Search }
-    protected EnemyState currentState = EnemyState.Patrol;
-
-    // LOS
     protected float lastRaycastTime;
     protected Vector2 lastSeenPlayerPos;
 
-    // Search
-    protected readonly List<Vector2> lastKnownCheckpoints = new List<Vector2>();
+    protected readonly List<Vector2> lastKnownCheckpoints = new();
     protected int searchIndex;
     protected float searchStartTime;
 
-    //Player trail
-    protected List<Vector2> PlayerCheckPoint = new();
+    protected List<Vector3> PlayerCheckPoint = new();
+
+    private EnemyFSM stateMachine;
+    private EnemyIdleState idleState;
+    private EnemyPatrolState patrolState;
+    private EnemyChaseState chaseState;
+    private EnemySearchState searchState;
 
     protected virtual void Awake()
     {
@@ -55,24 +55,24 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     protected virtual void Start()
     {
-        OnPatrolSetup();
+        BuildFSM();
     }
 
     private void OnEnable()
     {
-        EventBus<EnemyPlayerTrailCheckPointEvent>.OnEvent += (OnPlayerConnected);
-        EventBus<EnemyDamagedEvent>.OnEvent +=(EnemyDamaged);
+        EventBus<EnemyPlayerTrailCheckPointEvent>.OnEvent += OnPlayerConnected;
+        EventBus<EnemyDamagedEvent>.OnEvent += EnemyDamaged;
     }
 
     private void OnDisable()
     {
-        EventBus<EnemyPlayerTrailCheckPointEvent>.OnEvent -= (OnPlayerConnected);
-        EventBus<EnemyDamagedEvent>.OnEvent -= (EnemyDamaged);
+        EventBus<EnemyPlayerTrailCheckPointEvent>.OnEvent -= OnPlayerConnected;
+        EventBus<EnemyDamagedEvent>.OnEvent -= EnemyDamaged;
     }
 
     protected virtual void Update()
     {
-        if (detectPlayer.detectPlayerPosition == null || enemyHealth == null || enemyHealth.currentHealth <= 0) return;
+        if (!IsAlive()) return;
 
         if (Time.time - lastRaycastTime >= raycastInterval)
         {
@@ -80,256 +80,164 @@ public abstract class EnemyMovement2D : MonoBehaviour
             HandleLineOfSight();
         }
 
+        stateMachine?.Tick();
         UpdateUIState();
-
     }
 
     protected virtual void FixedUpdate()
     {
-        if (enemyHealth == null || enemyHealth.currentHealth <= 0)
+        if (!IsAlive())
         {
             StopHorizontal();
             return;
         }
 
-        // Handle knockback in FixedUpdate so physics isn't immediately overwritten by AI movement
         if (isKnockedBack)
         {
             knockbackTimer -= Time.fixedDeltaTime;
-            if (knockbackTimer <= 0f)
-            {
-                isKnockedBack = false;
-            }
-            else
-            {
-                return;
-            }
+            if (knockbackTimer <= 0f) isKnockedBack = false;
+            else return;
         }
 
-        switch (currentState)
-        {
-            case EnemyState.Chase:
-                Chase();
-                break;
-            case EnemyState.Search:
-                Search();
-                break;
-            case EnemyState.Patrol:
-                Patrol();
-                break;
-            case EnemyState.Idle:
-            default:
-                Idle();
-                break;
-        }
+        stateMachine?.PhysicsTick();
+    }
+
+    private void BuildFSM()
+    {
+        stateMachine = new EnemyFSM();
+
+        idleState = new EnemyIdleState(this);
+        patrolState = new EnemyPatrolState(this);
+        chaseState = new EnemyChaseState(this);
+        searchState = new EnemySearchState(this);
+
+        idleState.AddTransition(() => CanSeePlayer(), chaseState);
+        idleState.AddTransition(() => !CanSeePlayer(), patrolState);
+
+        patrolState.AddTransition(() => CanSeePlayer(), chaseState);
+
+        chaseState.AddTransition(() => !CanSeePlayer(), searchState);
+
+        searchState.AddTransition(() => CanSeePlayer(), chaseState);
+        searchState.AddTransition(() => IsSearchFinishedOrTimedOut(), patrolState);
+
+        stateMachine.SetInitialState(patrolState);
     }
 
     public void UpdateUIState()
     {
         if (stateText != null)
-        {
-            stateText.text = "State: " + currentState.ToString();
-        }
+            stateText.text = "State: " + (stateMachine != null ? stateMachine.CurrentStateName : "None");
     }
 
-    // State machine helpers
-    protected void EnterState(EnemyState newState)
+    protected bool IsAlive()
     {
-        if (currentState == newState) return;
-        currentState = newState;
-
-        if (newState == EnemyState.Idle)
-            StopHorizontal();
-
-        if (newState == EnemyState.Search)
-        {
-            lastKnownCheckpoints.Clear();
-            BuildCheckpointSnapshot(lastKnownCheckpoints);
-            searchIndex = 0;
-            searchStartTime = Time.time;
-
-            if (lastKnownCheckpoints.Count == 0 && lastSeenPlayerPos != Vector2.zero)
-            {
-                lastKnownCheckpoints.Add(lastSeenPlayerPos);
-            }
-        }
-
-        if (newState == EnemyState.Patrol)
-            OnPatrolSetup();
+        return detectPlayer != null && detectPlayer.detectPlayerPosition != null &&
+               enemyHealth != null && enemyHealth.currentHealth > 0;
     }
 
-    protected virtual void Idle() => StopHorizontal();
+    protected virtual Vector2 GetEyeOrigin() => (Vector2)transform.position + eyeOffset;
 
-    protected virtual void Chase()
+    protected bool CanSeePlayer()
     {
-        if (detectPlayer.detectPlayerPosition == null) return;
-        Vector2 toPlayer = (Vector2)detectPlayer.detectPlayerPosition.position - (Vector2)transform.position;
-        MoveChase(toPlayer);
+        if (detectPlayer == null || detectPlayer.detectPlayerPosition == null) return false;
 
-        // if actively chasing, update last seen pos
-        lastSeenPlayerPos = detectPlayer.detectPlayerPosition.position;
-    }
-
-    protected virtual void Search()
-    {
-        if (lastKnownCheckpoints.Count == 0)
-        {
-            if (Time.time - searchStartTime > searchTimeout) EnterState(EnemyState.Patrol);
-            else StopHorizontal();
-            return;
-        }
-
-        if (searchIndex >= lastKnownCheckpoints.Count)
-        {
-            EnterState(EnemyState.Patrol);
-            return;
-        }
-
-        Vector2 target = lastKnownCheckpoints[searchIndex];
-
-        if (HasReachedTarget(target))
-        {
-            searchIndex++;
-            // small pause when reaching a checkpoint
-            StopHorizontal();
-            return;
-        }
-
-        MoveSearchToward(target);
-
-        if (Time.time - searchStartTime > searchTimeout)
-            EnterState(EnemyState.Patrol);
-    }
-
-    protected virtual void Patrol()
-    {
-        // Patrol-specific behavior implemented by derived classes
-        MovePatrol();
-    }
-
-    // LOS
-    protected void HandleLineOfSight()
-    {
-        if (detectPlayer.detectPlayerPosition == null) return;
-
-        float distanceToPlayer = Vector2.Distance(transform.position, detectPlayer.detectPlayerPosition.position);
-        if (distanceToPlayer > detectionRange) return;
+        float distance = Vector2.Distance(transform.position, detectPlayer.detectPlayerPosition.position);
+        if (distance > detectionRange) return false;
 
         Vector2 origin = GetEyeOrigin();
         Vector2 dir = ((Vector2)detectPlayer.detectPlayerPosition.position - origin).normalized;
-
-        RaycastHit2D hit = Physics2D.Raycast(origin, dir, distanceToPlayer, obstacleLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, obstacleLayer);
         bool blocked = hit.collider != null;
 
         if (!blocked)
-        {
             lastSeenPlayerPos = detectPlayer.detectPlayerPosition.position;
-            EnterState(EnemyState.Chase);
-        }
-        else
-        {
-            if (currentState == EnemyState.Chase)
-                EnterState(EnemyState.Search);
-        }
+
+        return !blocked;
     }
 
-    protected virtual Vector2 GetEyeOrigin()
+    protected void HandleLineOfSight()
     {
-        return (Vector2)transform.position + eyeOffset;
+        // kept for compatibility / debugging; transitions use CanSeePlayer()
+        _ = CanSeePlayer();
     }
 
-    // Helpers
+    protected bool IsSearchFinishedOrTimedOut()
+    {
+        if (Time.time - searchStartTime > searchTimeout) return true;
+        return searchIndex >= lastKnownCheckpoints.Count && lastKnownCheckpoints.Count > 0;
+    }
+
+    public bool IsSearchTimedOut() => Time.time - searchStartTime > searchTimeout;
+
+    public void PrepareSearchSnapshot()
+    {
+        lastKnownCheckpoints.Clear();
+        BuildCheckpointSnapshot(lastKnownCheckpoints);
+        searchIndex = 0;
+        searchStartTime = Time.time;
+
+        if (lastKnownCheckpoints.Count == 0 && lastSeenPlayerPos != Vector2.zero)
+            lastKnownCheckpoints.Add(lastSeenPlayerPos);
+    }
+
     protected void StopHorizontal()
     {
         if (Mathf.Abs(rb.linearVelocity.x) > 0.01f)
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
-    protected virtual void BuildCheckpointSnapshot(List<Vector2> dest)
-    {
-        /*
-        if (playerMovement == null)
-        {
-            playerMovement = FindObjectOfType<PlayerMovement>();
-            if (playerMovement == null || playerMovement.checkpointTrail == null) return;
-        }
 
-        var trail = playerMovement.checkpointTrail;
-        for (int i = trail.Count - 1; i >= 0; i--)
-        {
-            dest.Add((Vector2)trail[i]);
-        }*/
+    // wrappers for state classes
+    public void StopHorizontalPublic() => StopHorizontal();
+    public void OnPatrolSetupPublic() => OnPatrolSetup();
+    public void MovePatrolPublic() => MovePatrol();
+    public void MoveChasePublic(Vector2 toPlayer) => MoveChase(toPlayer);
+    public void MoveSearchTowardPublic(Vector2 target) => MoveSearchToward(target);
+    public bool HasReachedTargetPublic(Vector2 target) => HasReachedTarget(target);
+
+    public bool HasPlayerTarget() => detectPlayer != null && detectPlayer.detectPlayerPosition != null;
+    public Vector2 GetToPlayerVector() => (Vector2)detectPlayer.detectPlayerPosition.position - (Vector2)transform.position;
+    public void UpdateLastSeenPlayerPosFromTarget()
+    {
+        if (detectPlayer != null && detectPlayer.detectPlayerPosition != null)
+            lastSeenPlayerPos = detectPlayer.detectPlayerPosition.position;
     }
 
-    // Abstract movement hooks derived classes must implement
+    public int SearchPointsCount => lastKnownCheckpoints.Count;
+    public int SearchIndex => searchIndex;
+    public Vector2 GetSearchPointAt(int index) => lastKnownCheckpoints[index];
+    public void AdvanceSearchIndex() => searchIndex++;
+
+    protected virtual void BuildCheckpointSnapshot(List<Vector2> dest) { }
+
     protected abstract void MoveChase(Vector2 toPlayer);
     protected abstract void MoveSearchToward(Vector2 target);
     protected abstract bool HasReachedTarget(Vector2 target);
-
-    // Patrol hooks
     protected abstract void OnPatrolSetup();
     protected abstract void MovePatrol();
 
-    private void OnDrawGizmos()
+    private void OnPlayerConnected(EnemyPlayerTrailCheckPointEvent e)
     {
-        if (detectPlayer.detectPlayerPosition == null) return;
-
-        Vector3 enemyPos = transform.position;
-        Vector3 playerPos = detectPlayer.detectPlayerPosition.position;
-        float distance = Vector3.Distance(enemyPos, playerPos);
-        Vector3 direction = (playerPos - enemyPos).normalized;
-        Vector3 rangeEnd = enemyPos + direction * detectionRange;
-
-        // Raycast to check if player is in sight
-        RaycastHit2D hit = Physics2D.Raycast(enemyPos, direction, distance, obstacleLayer);
-        bool canSeePlayer = (hit.collider == null);
-
-        if (canSeePlayer)
-        {
-            // Always draw green up to detection range
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(enemyPos, distance > detectionRange ? rangeEnd : playerPos);
-
-            // If player is further than detection range, draw red from range end to player
-            if (distance > detectionRange)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(rangeEnd, playerPos);
-            }
-        }
-        else
-        {
-            // Out of sight: whole line is red
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(enemyPos, playerPos);
-        }
-    }
-
-    private void OnPlayerConnected(EnemyPlayerTrailCheckPointEvent enemyPlayerTrailCheckPointEvent)
-    {
-        PlayerCheckPoint = enemyPlayerTrailCheckPointEvent.CheckpointTrailT;
+        PlayerCheckPoint = e.CheckpointTrailT.ConvertAll(v2 => new Vector3(v2.x, v2.y, 0f));
     }
 
     public void KnockBackEnemy()
     {
-        Vector2 direction = Vector2.up; 
+        Vector2 direction = Vector2.up;
 
-        if (detectPlayer.detectPlayerPosition != null)
+        if (detectPlayer != null && detectPlayer.detectPlayerPosition != null)
         {
             float xDir = (transform.position.x - detectPlayer.detectPlayerPosition.position.x) >= 0 ? 1f : -1f;
             direction = new Vector2(xDir, 1f);
         }
 
-        Vector2 knockVelocity = new Vector2(direction.x * horizontalBounceBackForce, direction.y * verticalBounceBackForce);
-        rb.linearVelocity = knockVelocity;
-        
-
+        rb.linearVelocity = new Vector2(direction.x * horizontalBounceBackForce, direction.y * verticalBounceBackForce);
         isKnockedBack = true;
         knockbackTimer = knockbackDuration;
-        //Debug.Log("enemy is knocked back");
     }
 
-    void EnemyDamaged(EnemyDamagedEvent enemyDamagedEvent)
+    void EnemyDamaged(EnemyDamagedEvent e)
     {
-        KnockBackEnemy(); 
+        KnockBackEnemy();
     }
 }

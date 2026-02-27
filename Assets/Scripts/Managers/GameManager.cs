@@ -1,10 +1,14 @@
 using Assets.Scripts.EventBus.Events;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [SerializeField] private string sceneName;
+    [SerializeField] private int respawnChances;
+    private int timesRespawned = 0;
 
     [Header("Player Settings")]
     public GameObject Player;
@@ -28,10 +32,19 @@ public class GameManager : MonoBehaviour
     }
 
     public void DiePlayer()
-    {
-        Player.transform.position = SavePosition;
-        PlayerRB2D.linearVelocity = Vector3.zero;
-        PlayerHealth.ResetHealth();
-        EventBus<UpdatePlayerUIEvent>.Publish(new UpdatePlayerUIEvent(this));
+    {   
+        if (timesRespawned < respawnChances)
+        {
+            timesRespawned++;
+            Player.transform.position = SavePosition;
+            PlayerRB2D.linearVelocity = Vector3.zero;
+            PlayerHealth.ResetHealth();
+            EventBus<UpdatePlayerUIEvent>.Publish(new UpdatePlayerUIEvent(this));
+        }
+        if (timesRespawned >= respawnChances)
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+        
     }
 }

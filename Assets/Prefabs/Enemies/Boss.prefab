@@ -713,7 +713,6 @@ MonoBehaviour:
   minHealth: 0
   currentHealth: 500
   enemyPrefab: {fileID: 6354875274338379478}
-  enemyMovement: {fileID: 561040312418415602}
   healthTextEnemy: {fileID: 3227766838503147310}
 --- !u!70 &7169677881445767319
 CapsuleCollider2D:
@@ -803,7 +802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3079081158631173211
 RectTransform:
   m_ObjectHideFlags: 0

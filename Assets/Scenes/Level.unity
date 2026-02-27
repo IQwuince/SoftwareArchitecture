@@ -12325,6 +12325,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1250030643}
   - component: {fileID: 1250030642}
+  - component: {fileID: 1250030644}
   m_Layer: 0
   m_Name: QuestManager
   m_TagString: Untagged
@@ -12362,6 +12363,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 935532731}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1250030644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250030641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07daf96a03727d745a097e1555bc92e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IQwuince.Quests.QuestRewardApplier
+  questManager: {fileID: 1250030642}
 --- !u!1 &1318197663
 GameObject:
   m_ObjectHideFlags: 0
@@ -12742,6 +12756,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0487c4a87c57f41a4027b2dd08a309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  sceneName: Menu
+  respawnChances: 3
   Player: {fileID: 682394710}
   PlayerRB2D: {fileID: 682394711}
   PlayerHealth: {fileID: 682394716}
