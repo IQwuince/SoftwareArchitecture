@@ -80,8 +80,6 @@ public class BossMovement : EnemyMovement2D
         return Mathf.Abs(target.x - transform.position.x) <= reachThreshold;
     }
 
-    // Build checkpoint snapshot but filter out points that are unreachable (player is too high).
-    // Project each checkpoint vertically down to the ground (so the enemy can navigate to ground points).
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
         // ensure we have playerMovement reference

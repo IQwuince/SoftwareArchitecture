@@ -3,6 +3,10 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Level system that handles all the player leveling. The AddExperience function ands int amount of xp. 
+/// when levelup it sends an event to the playerLevel script, that handles using the level point to get stronger.
+/// <summary>
 public class LevelSystem : MonoBehaviour
 {
     [Header("Experience")]
@@ -41,12 +45,6 @@ public class LevelSystem : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
         {
             AddExperience(50);
-        }
-
-        if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
-        {
-            SpendLevel(1);
-            UpdateUI();
         }
     }
 

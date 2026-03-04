@@ -5,6 +5,20 @@ using UnityEngine.InputSystem;
 
 namespace IQwuince.Quests
 {
+    /// <summary>
+    /// The Quest manager script handles the quest logic. 
+    /// Once a quest is activated, in the game by a button press.
+    /// The QuestManager will create a new Quest.
+    /// 
+    /// Enemy kill:
+    /// Once an enemy is killed it will send an event OnEnemyKilledEvent. The HandleEnemyKilled will listen to this and trigger the handleEnemyKilled function.
+    /// It will store the enemyPrefab in the enemyKillCounts dictionary and send a questChanged event to the QuestUIManager via the Quest script.
+    /// 
+    /// Object collect:
+    /// The HandleCollectQuest will look in the player inventory for the quest item. And creates a new int. And sends an questChanged event to the QuestUIManager via the Quest script.
+    /// 
+    /// if the quest is completed. it will remove the questfrom the quest dictionary and send a questfinished event.
+    /// </summary>
     public class QuestManager : MonoBehaviour
     {
         [Header("Quests")]

@@ -28,7 +28,6 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     public TMP_Text itemQuantityText;
 
     [Header("References")]
-    private Inventory inventory;
     public Image selectedShader;
     public bool thisItemSelected;
     private string itemDescription;

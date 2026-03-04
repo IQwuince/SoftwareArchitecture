@@ -187,7 +187,7 @@ public abstract class EnemyMovement2D : MonoBehaviour
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 
-    // wrappers for state classes
+    // functions for state classes
     public void StopHorizontalPublic() => StopHorizontal();
     public void OnPatrolSetupPublic() => OnPatrolSetup();
     public void MovePatrolPublic() => MovePatrol();

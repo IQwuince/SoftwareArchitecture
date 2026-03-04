@@ -38,7 +38,7 @@ public class EnemyCombat : MonoBehaviour
     }
     private void Update()
     {
-        if (willShoot == true)
+        if (willShoot == true && playerInReach== true)
         {
             if (bullet == null || bulletPos == null) return;
 

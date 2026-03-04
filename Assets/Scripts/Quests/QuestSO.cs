@@ -1,7 +1,9 @@
 using UnityEngine;
 
 namespace IQwuince.Quests
-{
+{   /// <summary>
+    /// Scriptable object that has basic info about the quest like reward, target, queststype etc.
+    /// <summary>
     public abstract class QuestSO : ScriptableObject
     {
         [Header("Quest Identity")]

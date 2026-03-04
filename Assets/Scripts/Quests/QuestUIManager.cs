@@ -5,7 +5,12 @@ using System.Collections.Generic;
 
 
 namespace IQwuince.Quests
-{
+{   /// <summary>
+    /// When QuestUIManager gets an event for a new quest. It will create a new string with the quest info. 
+    /// When it gets a questChanged event. It will Update the UI.
+    /// Once it gets a questFinished event. It will show "Quest completed" and then Update the UI, so removing the text.
+    /// <summary>
+
     public class QuestUIManager : MonoBehaviour
     {
         [Tooltip("Assign QuestManager (runtime)")]

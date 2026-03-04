@@ -48,17 +48,14 @@ public class Item
     [Header("Visuals")]
     public Sprite itemIcon;
     public GameObject itemModel;
-
-    // Keep a reference to the original ScriptableObject that created this runtime Item
+    
     [NonSerialized]
     private ItemData sourceData;
     public ItemData ItemData => sourceData;
 
-    // Convenience: if the source SO is a Usables, expose its values here
     public int HealAmount => ItemData is Usables u ? u.healAmount : 0;
     public bool IsUsable => ItemData is Usables u ? u.isUsable : false;
 
-    // Constructor used by ItemData.CreateItem()
     public Item(ItemData itemData)
     {
         sourceData = itemData;
