@@ -2,6 +2,9 @@ using Assets.Scripts.EventBus.Events;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Simple gameManager that handles player checkpoint and player dying. 
+/// <summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }

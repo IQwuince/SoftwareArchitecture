@@ -4,6 +4,9 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
 
+/// <summary>
+/// A health script that the enemies and player use for health logic
+/// </summary>
 public class GenericHealth : MonoBehaviour
 {
 

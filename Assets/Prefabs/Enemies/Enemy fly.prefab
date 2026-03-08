@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DetectPlayer
   detectPlayerPosition: {fileID: 0}
+  enemyCombat: {fileID: 8358064692287050996}
 --- !u!1 &3267711389172939765
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,6 +520,8 @@ MonoBehaviour:
   damageAmount: 20
   bullet: {fileID: 0}
   bulletPos: {fileID: 8402535119350472016}
+  playerInReach: 0
+  willShoot: 0
   bulletDuration: 0
   fireInterval: 0
 --- !u!61 &6482430075036208400

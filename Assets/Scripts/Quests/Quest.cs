@@ -2,6 +2,7 @@ using System;
 
 namespace IQwuince.Quests
 {
+
     public class Quest
     {
         public QuestSO questData { get; private set; }

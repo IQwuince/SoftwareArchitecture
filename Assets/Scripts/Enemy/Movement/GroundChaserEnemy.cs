@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Script that handles the ground moving enemies.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class GroundChaserEnemy : EnemyMovement2D
 {
@@ -17,7 +20,7 @@ public class GroundChaserEnemy : EnemyMovement2D
 
     protected override void OnPatrolSetup()
     {
-        // keep current facing direction 
+       
     }
 
     protected override void MovePatrol()
@@ -54,7 +57,6 @@ public class GroundChaserEnemy : EnemyMovement2D
         lastFlipTime = Time.time;
     }
 
-    // Flip only on solid enemy collision (ignore triggers)
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.isTrigger) return;

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Script that handles loot recieved from killing enemies
+/// </summary>
 public class EnemyLoot : MonoBehaviour
 {
     [Header("Variables item drop")]

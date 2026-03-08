@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System;
 
+/// <summary>
+/// Script that handles the UI inventory. It handles the item slots and being able to press them. and displaying the description text and usable item button.
+/// </summary>
 public class InventoryUI : MonoBehaviour
 {
     public Inventory inventory;

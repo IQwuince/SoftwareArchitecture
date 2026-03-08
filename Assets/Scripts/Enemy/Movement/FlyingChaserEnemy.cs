@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Script that handles the flying enemies.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class FlyingChaserEnemy : EnemyMovement2D
 {
@@ -25,7 +28,6 @@ public class FlyingChaserEnemy : EnemyMovement2D
         float targetX = patrolCenter.x + patrolDirection * patrolRadius;
         float dx = targetX - transform.position.x;
 
-        // get collider bounds (so we cast from front edge)
         Collider2D col = GetComponent<Collider2D>();
         float halfWidth = col != null ? col.bounds.extents.x : 0.25f;
 

@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine.InputSystem;
 using Assets.Scripts.EventBus.Events;
 
+/// <summary>
+/// SCript handles the use and upgrading of the player stats
+/// </summary>
 public class PlayerLevel : MonoBehaviour
 {
     [Header("References")]

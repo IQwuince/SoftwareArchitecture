@@ -3,13 +3,16 @@ using UnityEngine.UI;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Script that handles the enemy combat
+/// </summary>
 public class EnemyCombat : MonoBehaviour
 {
     public int damageAmount;
 
     public GameObject bullet;
     public Transform bulletPos;
-    private bool playerInReach;
+    public bool playerInReach;
     public bool willShoot = false;
 
     private float reloadTimer;

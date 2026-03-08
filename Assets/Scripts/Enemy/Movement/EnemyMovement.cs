@@ -4,6 +4,9 @@ using TMPro;
 using Unity.VisualScripting;
 using Assets.Scripts.Enemy.Movement;
 
+/// <summary>
+/// Enemy movement script that handles the logic for enemies states and where to go to.
+/// </summary>
 public abstract class EnemyMovement2D : MonoBehaviour
 {
     [Header("References")]
@@ -158,7 +161,6 @@ public abstract class EnemyMovement2D : MonoBehaviour
 
     protected void HandleLineOfSight()
     {
-        // kept for compatibility / debugging; transitions use CanSeePlayer()
         _ = CanSeePlayer();
     }
 

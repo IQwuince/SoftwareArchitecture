@@ -25,7 +25,6 @@ public class HealingUsable : MonoBehaviour
             return;
         }
 
-        // Find the selected slot
         ItemSlot selectedSlot = null;
         foreach (var slot in inventoryUI.itemSlots)
         {
@@ -42,7 +41,6 @@ public class HealingUsable : MonoBehaviour
             return;
         }
 
-        // Find the corresponding Item in the inventory
         Item selectedItem = null;
         foreach (var item in inventoryUI.inventory.Items)
         {
@@ -59,7 +57,6 @@ public class HealingUsable : MonoBehaviour
             return;
         }
 
-        // Use the helper on Item to get heal amount
         if (!selectedItem.IsUsable)
         {
             Debug.LogWarning("Selected item is not usable.");

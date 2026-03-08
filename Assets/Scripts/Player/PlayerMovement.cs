@@ -47,16 +47,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // Read movement input (only read; application happens in FixedUpdate)
         moveInput = Keyboard.current.aKey.isPressed ? -1f : Keyboard.current.dKey.isPressed ? 1f : 0f;
 
-        // Read jump input
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             jumpInput = true;
         }
 
-        // Checkpoint timer
         checkpointTimer += Time.deltaTime;
         if (checkpointTimer >= checkpointInterval)
         {
@@ -121,13 +118,10 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnPlayerDamagedMovement()
     {
-        // Determine horizontal direction based on sprite flip (facing right -> not flipped)
         float kbX = isFlipped ? horizontalBounceBackForce : -horizontalBounceBackForce;
 
-        // Apply immediate velocity for knockback
         rb.linearVelocity = new Vector2(kbX, verticalBounceBackForce);
 
-        // Enter knockback state
         isKnockedBack = true;
         knockbackTimer = knockbackDuration;
     }

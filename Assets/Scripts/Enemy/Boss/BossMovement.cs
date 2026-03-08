@@ -6,7 +6,7 @@ public class BossMovement : EnemyMovement2D
 {
     [Header("Ground Patrol Settings")]
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float frontOffset = 0.4f;       // how far ahead to check for ground/wall
+    [SerializeField] private float frontOffset = 0.4f;       
     [SerializeField] private float groundCheckDistance = 0.8f;
     [SerializeField] private float wallCheckDistance = 0.35f;
     [SerializeField] private float flipCooldown = 0.12f;
@@ -16,12 +16,11 @@ public class BossMovement : EnemyMovement2D
 
     protected override void OnPatrolSetup()
     {
-        // keep current facing direction / sprite
+        
     }
 
     protected override void MovePatrol()
     {
-        // front origin (at feet level)
         Vector2 feetOffset = new Vector2(0f, -0.4f);
         Vector2 frontOrigin = (Vector2)transform.position + new Vector2(patrolDirection * frontOffset, feetOffset.y);
 
@@ -38,7 +37,6 @@ public class BossMovement : EnemyMovement2D
         {
             patrolDirection *= -1;
             lastFlipTime = Time.time;
-            // flip and continue next frame (avoid hard-stop every frame)
             return;
         }
 
@@ -82,27 +80,23 @@ public class BossMovement : EnemyMovement2D
 
     protected override void BuildCheckpointSnapshot(List<Vector2> dest)
     {
-        // ensure we have playerMovement reference
         if (PlayerCheckPoint == null)
         {
             if (PlayerCheckPoint == null) return;
         }
 
-        // newest-first, filter unreachable and project to ground
         for (int i = PlayerCheckPoint.Count - 1; i >= 0; i--)
         {
             Vector3 cp = PlayerCheckPoint[i];
 
-            // vertical filter (enemy cannot jump) - allow small tolerance
             if (cp.y - transform.position.y > 0.6f) continue;
 
-            // project to ground to avoid "air" points
             Vector2 start = new Vector2(cp.x, cp.y + 0.1f);
             RaycastHit2D groundHit = Physics2D.Raycast(start, Vector2.down, 6f, groundLayer);
             if (groundHit.collider != null)
                 dest.Add(groundHit.point);
             else
-                dest.Add(new Vector2(cp.x, transform.position.y)); // fallback to same Y as enemy
+                dest.Add(new Vector2(cp.x, transform.position.y)); 
         }
     }
 }

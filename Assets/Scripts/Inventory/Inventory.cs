@@ -5,6 +5,9 @@ using static UnityEditor.Progress;
 using NUnit.Framework.Interfaces;
 using Unity.Properties;
 
+/// <summary>
+/// Script that handles the Inventory logic. It adds and removes items and puts it in a list.
+/// </summary>
 public class Inventory : MonoBehaviour
 {
     [SerializeField]
